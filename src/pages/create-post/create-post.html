@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <form #form="ngForm" (ngSubmit)="logForm(form)" name="thisForm" novalidate>
+      <ion-item>
+        <ion-label>Product</ion-label>
+        <ion-input type="text" required [(ngModel)]="post.title" ngControl="title" name="title"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Description</ion-label>
+        <ion-textarea [(ngModel)]="post.description" ngControl="description" name="description"></ion-textarea>
+      </ion-item>
+      <button ion-button type="submit" block color="primary">Post</button>
+    </form>
+
+    <div id="data"></div>
+</ion-content>

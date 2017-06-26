@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div id="ctn">
+    <span id="helper"></span>
+      <img [src]="imageData"/>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col text-center>
+      <button ion-button color="secondary" (click)="createPost();">
+        Use this!
+      </button>
+    </ion-col>
+    <ion-col text-center>
+      <button ion-button color="danger" (click)="chooseAnother();" *ngIf="imageSource == 0">
+        Choose another
+      </button>
+      <button ion-button color="danger" (click)="retakePic();" *ngIf="imageSource == 1">
+        Take again
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-footer>
