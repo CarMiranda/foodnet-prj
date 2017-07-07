@@ -1,23 +1,20 @@
 page-home {
-    $max-height-allowed: 500px;
-    $max-width-allowed: 500px;
-
-    .footer {
-        background-color: rgba(0, 0, 0, 0);
-    }
-
-    .footer::before { 
-        background: none;
-    }
 
     #container {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: transparent;
         position: fixed;
         overflow: hidden;
         border: none;
         box-shadow: none;
         height: 100%;
         width: 100%;
+        margin: 0;
     }
+    
+}
 
+/* As we set the toBack property of the PreviewCamera object to true,
+* we need to make some elements transparent */
+html, body, ion-app, ion-content, ion-page, .nav-decor {
+    background-color: transparent !important;
 }

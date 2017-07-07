@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
 import { Platform, NavController } from 'ionic-angular';
-import { Camera, CameraOptions } from '@ionic-native/camera';
+import { CameraPreview, CameraPreviewPictureOptions, CameraPreviewOptions, CameraPreviewDimensions } from '@ionic-native/camera-preview';
+import { Camera, CameraOptions} from '@ionic-native/camera';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 import { Events } from 'ionic-angular';
+import { GlobalsProvider } from '../../providers/globals/globals';
 
+import { LoginPage } from '../login/login';
 import { ConfirmationPage } from '../confirmation/confirmation';
 import { LinefeedPage } from '../linefeed/linefeed';
+import { ChatPage } from '../chat/chat';
+import { SettingsPage } from '../settings/settings';
 
 @Component({
   selector: 'page-home',
@@ -18,21 +23,73 @@ export class HomePage {
   cameraUrl: SafeUrl;
   photoSelected: boolean;
   swipe: number = 0;
+  cameraOpen: boolean;
+  const 
 
-  constructor(public navCtrl: NavController, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer, public events: Events) {
+  constructor(public navCtrl: NavController, private platform: Platform, private camera: Camera, private cameraPreview: CameraPreview, private sanitizer: DomSanitizer, public events: Events, public globals: GlobalsProvider) {
+    platform.ready().then(() => {
+      // When native functions are ready, start the camera
+      let self = this;
+      this.startCamera().then((res) => {
+        // Subscribe to an navigation event triggering reopening of the camera
+        self.events.subscribe('nav:backHome', (user) => {
+          console.log('Navigated back Home!');
+          self.startCamera();
+        });
+      }, (err) => {
+        console.error(err);
+      });
+    });
+  }
+
+  // Function to start the camera
+  startCamera() {
     this.photoTaken = false;
-    events.subscribe('post:created', (post) => {
-      console.log('Post actually created!');
-      document.getElementById("title").innerHTML = "Title: " + post.title;
-      document.getElementById("description").innerHTML = "Description: " + post.description;
+    return new Promise((res) => {
+
+      // Set CameraPreview options
+      let options : CameraPreviewOptions = {
+        x: 0,
+        y: 0,
+        width: window.screen.availHeight,
+        height: window.screen.availHeight,
+        camera: 'rear',
+        tapPhoto: true,
+        previewDrag: false,
+        toBack: true,
+        alpha: 1
+      };
+
+      // Start CameraPreview asynchronously
+      let self = this;
+      this.cameraPreview.startCamera(options)
+        .then((res) => {
+          console.log(res);
+          self.cameraOpen = true;
+        }, (err) => {
+          console.error(err);
+        });
+
+      // Show CameraPreview asynchronously
+      this.cameraPreview.show()
+        .then((res) => {
+          console.log(res);
+          res(true);
+        }, (err) => {
+          console.error(err);
+        });
     });
   }
 
   selectFromGallery() {
+
+    // Set Camera options
     let options : CameraOptions = {
       sourceType: 0,      // Photo album
       destinationType: 1  // FILE_URI
     };
+
+    // Get picture from gallery asynchronously then navigate to confirmation page
     this.camera.getPicture(options).then((imageData) => {
       this.cameraUrl = this.sanitizer.bypassSecurityTrustUrl(imageData);
       this.photoSelected = true;
@@ -42,27 +99,26 @@ export class HomePage {
         'imageData': this.cameraUrl 
       });
     }, (err) => {
-      console.log(err);
-    })
+      console.error(err);
+    });
+
   }
 
-  openCamera() {
-    let options : CameraOptions = {
-      quality: 99,
-      destinationType: 0, // DATA_URL
-      sourceType: 1, // CAMERA
-      allowEdit: false,
-      encodingType: 0, // JPEG
-      targetWidth: innerWidth,
-      targetHeight: innerHeight,
-      saveToPhotoAlbum: false,
-      correctOrientation: true
-    };
 
-    this.camera.getPicture(options).then((imageData) => {
-      this.cameraData = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + imageData);
-      this.photoTaken = true;
-      this.photoSelected = false;
+  takePhoto() {
+
+    console.log('Taking photo...');
+
+    // Set CameraPreviewPicture options
+    let pictureOptions: CameraPreviewPictureOptions = {
+      width: window.screen.availWidth,
+      height: window.screen.availHeight,
+      quality: 50
+    }
+
+    // Take picture asynchronously, then navigate to confirmation page
+    this.cameraPreview.takePicture(pictureOptions).then((imageData) => {
+      this.cameraData = 'data:image/jpeg;base64,' + imageData;
       this.navCtrl.push( ConfirmationPage, { 
         'imageSource': 1,
         'imageData': this.cameraData 
@@ -70,15 +126,23 @@ export class HomePage {
     }, (err) => {
       console.log(err);
     });
+
+    console.log('Photo taken!');
   }
 
-  go(toPage: string) {
-    console.log("Swiped! Going to " + toPage);
-    if (toPage === 'Linefeed') {
-      this.navCtrl.push(LinefeedPage);
-    }
+  goToLinefeed() {
+    this.cameraPreview.stopCamera();
+    this.navCtrl.push(LinefeedPage);
   }
 
+  goToChat() {
+    this.cameraPreview.stopCamera();
+    this.navCtrl.push(ChatPage);
+  }
 
+  goToSettings() {
+    this.cameraPreview.stopCamera();
+    this.navCtrl.push(SettingsPage);
+  }
 
 }

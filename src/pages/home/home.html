@@ -1,31 +1,14 @@
-<ion-header>
-  <ion-navbar color="primary">
-    <ion-title>
-      Home
-    </ion-title>
-  </ion-navbar>
-</ion-header>
-
 <ion-content>
-  <ion-item id='container' (swipeleft)="go('Linefeed');">
-    <div id="postContent" padding>
-      <div id="title"></div>
-      <div id="description"></div>
-    </div>
-  </ion-item>
-</ion-content>
-
-<ion-footer>
-  <ion-row>
-    <ion-col text-center>
-      <button ion-button round color="primary" (click)="openCamera()" icon-only large>
-        <ion-icon name="camera"></ion-icon>
+  <ion-item id='container' swipe-vertical (swipeleft)="goToLinefeed()" (swiperight)="goToFriends()" [swipeDown]="goToSettings()">
+    <ion-fab center bottom large>
+      <button ion-fab color="light" (click)="takePhoto()">
+        <ion-icon name="radio-button-on" large></ion-icon>
       </button>
-    </ion-col>
-    <ion-col text-center>
-      <button ion-button round color="danger" (click)="selectFromGallery()" icon-only large>
+    </ion-fab>
+    <ion-fab right bottom small>
+      <button ion-fab color="light" (click)="selectFromGallery()" icon-only>
         <ion-icon name="image"></ion-icon>
       </button>
-    </ion-col>
-  </ion-row>
-</ion-footer>
+    </ion-fab>
+  </ion-item>
+</ion-content>

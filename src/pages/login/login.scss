@@ -1,0 +1,92 @@
+// Reset styles
+* {
+    margin: 0;
+    padding: 0;
+}
+
+page-login {
+
+    background-color: color($colors, primary, base);
+
+    #logo-container {
+        height: 40vh ;
+
+        ion-img {
+            height: 100%;
+            width: 100%;
+            background-color: transparent;
+        }
+
+        img {
+            height: 75%;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    #form-container {
+        height: 30vh;
+        width: 90vw;
+        margin: 0 auto;
+        background-color: color($colors, light, base);
+        border-radius: 10px;
+
+        ion-item {
+            background-color: color($colors, light, base);
+            height: 40%;
+        }
+
+        ion-item:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+        [type='submit'] {
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 10%;
+        }
+    }
+
+    #social-container {
+        height: 30vh;
+
+        ion-row {
+            ion-col {
+                button {
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            }
+        }
+
+        #facebook {
+            background-color: color($colors, facebook, base);
+            color: color($colors, light, base);
+
+            i {
+                color: color($colors, light, base);
+            }
+        }
+
+        #gplus {
+            background-color: color($colors, gplus, base);
+            color: color($colors, light, base);
+
+            i {
+                color: color($colors, light, base);
+            }
+        }
+
+        #linkedin {
+            background-color: color($colors, linkedin, base);
+            color: color($colors, light, base);
+
+            i {
+                color: color($colors, light, base);
+            }
+        }
+    }
+
+}
