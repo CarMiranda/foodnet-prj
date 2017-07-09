@@ -1,5 +1,5 @@
 <ion-content>
-  <ion-item id='container' swipe-vertical (swipeleft)="goToLinefeed()" (swiperight)="goToFriends()" [swipeDown]="goToSettings()">
+  <ion-item id='container' (swipeleft)="goToLinefeed()" (swiperight)="goToFriendsList()" (swipedown)="goToSettings()">
     <ion-fab center bottom large>
       <button ion-fab color="light" (click)="takePhoto()">
         <ion-icon name="radio-button-on" large></ion-icon>

@@ -1,3 +1,65 @@
 page-linefeed {
 
+    ion-content {
+        background-color: #FFF !important;
+
+        #products {
+            ion-item {
+                .item-inner {
+                    .viewBtn {
+                        color: color($colors, primary, base);
+                        font-size: 1.5rem !important;
+                    }
+                }
+            }
+        }
+    }
+
+    ion-header {
+        &.header::after {
+            display: none !important;
+        }
+
+        ion-navbar {
+            &.toolbar {
+                height: 10vh;
+
+                .toolbar-background {
+                    background-color: color($colors, primary, base) !important;
+                    border-color: #01c0b0 !important;
+                }
+            }
+
+            .toolbar-content {
+                ion-title {
+                    .toolbar-title {
+                        font-size: 2.5rem !important;
+                    }
+                }
+            }
+
+            ion-buttons {
+                &.bar-button {
+                    font-size: 1.6rem !important;
+                    height: 6vh;
+                    width: 6vh;
+                }
+
+                button#favs, button#search {
+                    border-radius: 100% !important;
+                    padding: 2px !important;
+                }
+
+                button#favs {
+                    background-color: color($colors, danger, base) !important;
+                    border: 1px solid #F00 !important;
+                }
+
+                button#search {
+                    background-color: color($colors, light, base) !important;
+                    border: 1px solid #EEE !important;
+                }
+            }
+        }
+    }
 }

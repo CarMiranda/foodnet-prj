@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, NavController } from 'ionic-angular';
+import { Platform, NavController, NavParams } from 'ionic-angular';
 import { CameraPreview, CameraPreviewPictureOptions, CameraPreviewOptions, CameraPreviewDimensions } from '@ionic-native/camera-preview';
 import { Camera, CameraOptions} from '@ionic-native/camera';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
@@ -9,7 +9,7 @@ import { GlobalsProvider } from '../../providers/globals/globals';
 import { LoginPage } from '../login/login';
 import { ConfirmationPage } from '../confirmation/confirmation';
 import { LinefeedPage } from '../linefeed/linefeed';
-import { ChatPage } from '../chat/chat';
+import { FriendsListPage } from '../friends-list/friends-list';
 import { SettingsPage } from '../settings/settings';
 
 @Component({
@@ -19,34 +19,18 @@ import { SettingsPage } from '../settings/settings';
 export class HomePage {
 
   cameraData: SafeResourceUrl;
-  photoTaken: boolean;
   cameraUrl: SafeUrl;
+  photoTaken: boolean;
   photoSelected: boolean;
-  swipe: number = 0;
   cameraOpen: boolean;
-  const 
+  actions: string;
 
-  constructor(public navCtrl: NavController, private platform: Platform, private camera: Camera, private cameraPreview: CameraPreview, private sanitizer: DomSanitizer, public events: Events, public globals: GlobalsProvider) {
-    platform.ready().then(() => {
-      // When native functions are ready, start the camera
-      let self = this;
-      this.startCamera().then((res) => {
-        // Subscribe to an navigation event triggering reopening of the camera
-        self.events.subscribe('nav:backHome', (user) => {
-          console.log('Navigated back Home!');
-          self.startCamera();
-        });
-      }, (err) => {
-        console.error(err);
-      });
-    });
-  }
+  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private cameraPreview: CameraPreview, private sanitizer: DomSanitizer, public events: Events, public globals: GlobalsProvider) {}
 
   // Function to start the camera
-  startCamera() {
-    this.photoTaken = false;
-    return new Promise((res) => {
-
+  openCameraPreview() {
+    console.log('Opening camera preview...');
+    return new Promise((resolve) => {
       // Set CameraPreview options
       let options : CameraPreviewOptions = {
         x: 0,
@@ -61,27 +45,27 @@ export class HomePage {
       };
 
       // Start CameraPreview asynchronously
-      let self = this;
-      this.cameraPreview.startCamera(options)
-        .then((res) => {
-          console.log(res);
-          self.cameraOpen = true;
+      console.log('Starting camera...');
+      this.cameraPreview.startCamera(options).then((res) => {
+          console.log('Camera started correctly!');
+          this.cameraOpen = true;
         }, (err) => {
-          console.error(err);
+          console.log(err);
         });
 
       // Show CameraPreview asynchronously
-      this.cameraPreview.show()
-        .then((res) => {
-          console.log(res);
-          res(true);
+      console.log('Starting camera show...');
+      this.cameraPreview.show().then((res) => {
+          console.log('Camera shown correctly!');
+          resolve(true);
         }, (err) => {
-          console.error(err);
+          console.log(err);
         });
     });
   }
 
   selectFromGallery() {
+    console.log('Opening gallery...');
 
     // Set Camera options
     let options : CameraOptions = {
@@ -91,22 +75,33 @@ export class HomePage {
 
     // Get picture from gallery asynchronously then navigate to confirmation page
     this.camera.getPicture(options).then((imageData) => {
+      console.log('Photo selected correctly!');
       this.cameraUrl = this.sanitizer.bypassSecurityTrustUrl(imageData);
       this.photoSelected = true;
       this.photoTaken = false;
+      var callback = (params) => {
+        return new Promise((resolve, reject) => {
+          this.actions = params;
+          resolve();
+        });
+      }
+      console.log('Navigating to ConfirmationPage....');
       this.navCtrl.push( ConfirmationPage, { 
         'imageSource': 0,
-        'imageData': this.cameraUrl 
+        'imageData': this.cameraUrl,
+        'callback': callback
       });
     }, (err) => {
+      try {
+        this.openCameraPreview();
+      } catch (exception) {
+        console.log(exception);
+      }
       console.error(err);
     });
-
   }
 
-
   takePhoto() {
-
     console.log('Taking photo...');
 
     // Set CameraPreviewPicture options
@@ -118,7 +113,9 @@ export class HomePage {
 
     // Take picture asynchronously, then navigate to confirmation page
     this.cameraPreview.takePicture(pictureOptions).then((imageData) => {
+      console.log('Photo taken!');
       this.cameraData = 'data:image/jpeg;base64,' + imageData;
+      console.log('Navigating to ConfirmationPage...');
       this.navCtrl.push( ConfirmationPage, { 
         'imageSource': 1,
         'imageData': this.cameraData 
@@ -126,22 +123,45 @@ export class HomePage {
     }, (err) => {
       console.log(err);
     });
+  }
 
-    console.log('Photo taken!');
+  ionViewWillEnter() {
+    console.log('Will enter HomePage!');
+    if (this.actions) {
+      console.log('Actions parameter passed from navigation.');
+      switch (this.actions) {
+        case 'chooseanother':
+          this.selectFromGallery();
+        break;
+        case 'showtutorial':
+        break;
+      }
+      this.actions = '';
+    } else {
+      console.log('Starting HomePage...');
+      this.photoTaken = false;
+      this.photoSelected = false;
+      this.openCameraPreview();
+    }
+  }
+
+  ionViewWillLeave() {
+    console.log('Will leave HomePage...');
+    this.cameraPreview.stopCamera();
   }
 
   goToLinefeed() {
-    this.cameraPreview.stopCamera();
+    console.log('Navigating to LinefeedPage...');
     this.navCtrl.push(LinefeedPage);
   }
 
-  goToChat() {
-    this.cameraPreview.stopCamera();
-    this.navCtrl.push(ChatPage);
+  goToFriendsList() {
+    console.log('Navigating to FriendsListPage...');
+    this.navCtrl.push(FriendsListPage);
   }
 
   goToSettings() {
-    this.cameraPreview.stopCamera();
+    console.log('Navigating to SettingsPage...');
     this.navCtrl.push(SettingsPage);
   }
 

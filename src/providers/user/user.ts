@@ -4,10 +4,12 @@ import { Events } from 'ionic-angular';
 import 'rxjs/add/operator/map';
 
 class User {
-  private name : string;
+  private name: string;
+  public isLogged: boolean;
 
   constructor() {
     this.name = 'Carlos';
+    this.isLogged = true;
   }
 
   getName() {
@@ -26,8 +28,9 @@ export class UserProvider {
   }
 
   login() {
+    let self = this;
     return new Promise((resolve) => {
-      resolve(this.user);
+      resolve(self.user);
     });
   }
 

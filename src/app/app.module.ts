@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { Camera } from '@ionic-native/camera';
 import { CameraPreview } from '@ionic-native/camera-preview';
 import { HttpModule } from '@angular/http';
+import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -17,8 +18,19 @@ import { LoginPage } from '../pages/login/login';
 import { DbStorageProvider } from '../providers/db-storage/db-storage';
 import { GlobalsProvider } from '../providers/globals/globals';
 import { UserProvider } from '../providers/user/user';
-import { SwipeVerticalDirective } from '../directives/swipe-vertical/swipe-vertical';
 import { AuthProvider } from '../providers/auth/auth';
+
+export class MyHammerConfig extends HammerGestureConfig  {
+  overrides = <any>{
+      // override hammerjs default configuration
+      'pan': {threshold: 5},
+      'swipe': {
+           velocity: 0.4,
+           threshold: 20,
+           direction: 31 // /!\ ugly hack to allow swipe in all direction
+      }
+  }
+}
 
 @NgModule({
   declarations: [
@@ -28,8 +40,7 @@ import { AuthProvider } from '../providers/auth/auth';
     CreatePostPage,
     LinefeedPage,
     ProductDetailsPage,
-    LoginPage,
-    SwipeVerticalDirective
+    LoginPage
   ],
   imports: [
     BrowserModule,
@@ -55,7 +66,8 @@ import { AuthProvider } from '../providers/auth/auth';
     DbStorageProvider,
     GlobalsProvider,
     UserProvider,
-    AuthProvider
+    AuthProvider,
+    {provide: HAMMER_GESTURE_CONFIG, useClass: MyHammerConfig}
   ]
 })
 export class AppModule {}

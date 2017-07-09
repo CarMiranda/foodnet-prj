@@ -2,8 +2,11 @@
   <ion-navbar>
     <ion-title>FoodFeed</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only>
-        <ion-icon name="search"></ion-icon>
+      <button id="favs" ion-button icon-only>
+        <ion-icon name="heart" color="light"></ion-icon>
+      </button>
+      <button id="search" ion-button icon-only>
+        <ion-icon name="search" color="dark"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -11,14 +14,14 @@
 
 
 <ion-content padding>
-  <ion-list>
+  <ion-list id="products">
     <ion-item *ngFor="let product of data">
       <ion-thumbnail item-left item-start>
-        <ion-img src='{{product.picture.thumbnail}}'></ion-img>
+        <img src='{{product.picture.thumbnail}}' />
       </ion-thumbnail>
       <h2>{{product.name.first + ' ' + product.name.last}}</h2>
       <h3>{{product.cell}}</h3>
-      <button ion-button clear (click)="viewProduct(product.cell);" item-end>View</button>
+      <button ion-button clear class="viewBtn" (click)="viewProduct(product.cell);" item-right item-end>View</button>
     </ion-item>
   </ion-list>
 

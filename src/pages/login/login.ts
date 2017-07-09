@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { UserProvider } from '../../providers/user/user';
+import { HomePage } from '../home/home';
 
 @IonicPage()
 @Component({
@@ -20,6 +21,9 @@ export class LoginPage {
   }
 
   login() {
-    this.user.login();
+    let self = this;
+    this.user.login().then((user) => {
+      self.navCtrl.setRoot(HomePage);
+    });
   }
 }
