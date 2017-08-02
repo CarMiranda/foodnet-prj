@@ -11,7 +11,12 @@ export class CreatePostPage {
 
   post: any;
 
+  imageSource: number;
+  imageData: any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public events: Events) {
+  this.imageSource = navParams.get('imageSource');
+  this.imageData = navParams.get('imageData');
     this.post = {
       title: '',
       description: ''
@@ -19,9 +24,7 @@ export class CreatePostPage {
   }
 
   logForm() {
-    document.getElementById("data").innerHTML = "\
-      Title: " + this.post.title + " \n\
-      Description: " + this.post.description;
+    
     console.log('Post created!');
     this.events.publish('post:created', this.post);
     this.navCtrl.popAll();

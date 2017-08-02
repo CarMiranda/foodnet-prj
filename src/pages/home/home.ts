@@ -6,6 +6,7 @@ import { Events } from 'ionic-angular';
 
 import { ConfirmationPage } from '../confirmation/confirmation';
 import { LinefeedPage } from '../linefeed/linefeed';
+import { TestGeolocaPage } from '../test-geoloca/test-geoloca';
 
 @Component({
   selector: 'page-home',
@@ -37,9 +38,9 @@ export class HomePage {
       this.cameraUrl = this.sanitizer.bypassSecurityTrustUrl(imageData);
       this.photoSelected = true;
       this.photoTaken = false;
-      this.navCtrl.push( ConfirmationPage, { 
+      this.navCtrl.push( ConfirmationPage, {
         'imageSource': 0,
-        'imageData': this.cameraUrl 
+        'imageData': this.cameraUrl
       });
     }, (err) => {
       console.log(err);
@@ -63,9 +64,9 @@ export class HomePage {
       this.cameraData = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + imageData);
       this.photoTaken = true;
       this.photoSelected = false;
-      this.navCtrl.push( ConfirmationPage, { 
+      this.navCtrl.push( ConfirmationPage, {
         'imageSource': 1,
-        'imageData': this.cameraData 
+        'imageData': this.cameraData
       });
     }, (err) => {
       console.log(err);
@@ -77,7 +78,13 @@ export class HomePage {
     if (toPage === 'Linefeed') {
       this.navCtrl.push(LinefeedPage);
     }
+    if (toPage === 'TestGeoloca') {
+      this.navCtrl.push(TestGeolocaPage);
+    }
+
   }
+
+
 
 
 

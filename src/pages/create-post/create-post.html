@@ -3,7 +3,14 @@
   </ion-navbar>
 </ion-header>
 
+
+
+
 <ion-content>
+    <div id="ctn">
+      <span id="helper"></span>
+        <img [src]="imageData"/>
+    </div>
     <form #form="ngForm" (ngSubmit)="logForm(form)" name="thisForm" novalidate>
       <ion-item>
         <ion-label>Product</ion-label>

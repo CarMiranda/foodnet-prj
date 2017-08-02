@@ -7,8 +7,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-item id='container' (swipeleft)="go('Linefeed');">
+  <ion-item id='container' (swipeleft)="go('Linefeed');" (swiperight)="go('TestGeoloca');">
     <div id="postContent" padding>
+      <div id="image"></div>
       <div id="title"></div>
       <div id="description"></div>
     </div>
