@@ -8,6 +8,8 @@ import { ConfirmationPage } from '../confirmation/confirmation';
 import { LinefeedPage } from '../linefeed/linefeed';
 import { TestGeolocaPage } from '../test-geoloca/test-geoloca';
 
+import { TestgglemapsPage } from '../testgglemaps/testgglemaps'
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -79,7 +81,7 @@ export class HomePage {
       this.navCtrl.push(LinefeedPage);
     }
     if (toPage === 'TestGeoloca') {
-      this.navCtrl.push(TestGeolocaPage);
+      this.navCtrl.push(TestgglemapsPage);
     }
 
   }

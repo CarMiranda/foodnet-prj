@@ -6,6 +6,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { Camera } from '@ionic-native/camera';
 import { HttpModule } from '@angular/http';
 import { Geolocation } from '@ionic-native/geolocation';
+import {
+  GoogleMaps
+ } from '@ionic-native/google-maps';
+
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -14,7 +18,8 @@ import { CreatePostPage } from '../pages/create-post/create-post';
 import { LinefeedPage } from '../pages/linefeed/linefeed';
 import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { DbStorageProvider } from '../providers/db-storage/db-storage';
-import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca'
+import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca';
+import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps'
 
 @NgModule({
   declarations: [
@@ -24,7 +29,8 @@ import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca'
     CreatePostPage,
     LinefeedPage,
     ProductDetailsPage,
-    TestGeolocaPage
+    TestGeolocaPage,
+    TestgglemapsPage
   ],
   imports: [
     BrowserModule,
@@ -39,12 +45,14 @@ import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca'
     CreatePostPage,
     LinefeedPage,
     ProductDetailsPage,
-    TestGeolocaPage
+    TestGeolocaPage,
+    TestgglemapsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     Geolocation,
+    GoogleMaps,
     Camera,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     DbStorageProvider
