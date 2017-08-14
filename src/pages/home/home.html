@@ -1,21 +1,31 @@
-<ion-header>
-  <ion-navbar color="primary">
+<ion-header no-border>
+  <ion-toolbar>
+
+    <ion-buttons start>
+      <button ion-button icon-only (click)="openCamera()">
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-buttons>
+
     <ion-title>
-      Home
+      KooDeFood
     </ion-title>
-  </ion-navbar>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="goprofile()">
+        <ion-icon name="contact"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-item id='container' (swipeleft)="go('Linefeed');" (swiperight)="go('TestGeoloca');">
-    <div id="postContent" padding>
-      <div id="image"></div>
-      <div id="title"></div>
-      <div id="description"></div>
-    </div>
-  </ion-item>
-</ion-content>
 
+<ion-tabs>
+  <ion-tab [root]="tab1Root" tabTitle="Fil d'actualite" tabIcon="home"></ion-tab>
+  <ion-tab [root]="tab2Root" tabTitle="Messagerie" tabIcon="chatboxes"></ion-tab>
+</ion-tabs>
+<!--
 <ion-footer>
   <ion-row>
     <ion-col text-center>
@@ -29,4 +39,4 @@
       </button>
     </ion-col>
   </ion-row>
-</ion-footer>
+</ion-footer> -->

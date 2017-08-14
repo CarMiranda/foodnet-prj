@@ -19,7 +19,13 @@ import { LinefeedPage } from '../pages/linefeed/linefeed';
 import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { DbStorageProvider } from '../providers/db-storage/db-storage';
 import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca';
-import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps'
+import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps';
+import { WelcomePage } from '../pages/welcome/welcome';
+import { LoginPage } from '../pages/login/login';
+import { SignupPage } from '../pages/signup/signup';
+import { ProfilePage } from '../pages/profile/profile';
+import { FildactualitePage } from '../pages/fildactualite/fildactualite';
+import { MessageriePage } from '../pages/messagerie/messagerie';
 
 @NgModule({
   declarations: [
@@ -30,7 +36,13 @@ import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps'
     LinefeedPage,
     ProductDetailsPage,
     TestGeolocaPage,
-    TestgglemapsPage
+    TestgglemapsPage,
+    WelcomePage,
+    LoginPage,
+    SignupPage,
+    ProfilePage,
+    FildactualitePage,
+    MessageriePage
   ],
   imports: [
     BrowserModule,
@@ -46,7 +58,13 @@ import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps'
     LinefeedPage,
     ProductDetailsPage,
     TestGeolocaPage,
-    TestgglemapsPage
+    TestgglemapsPage,
+    WelcomePage,
+    LoginPage,
+    SignupPage,
+    ProfilePage,
+    FildactualitePage,
+    MessageriePage
   ],
   providers: [
     StatusBar,

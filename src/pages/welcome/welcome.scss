@@ -1,0 +1,19 @@
+page-welcome {
+#welcome{
+  background: color($colors,primary);
+  h1{
+    color : color($colors,light);
+    text-align: center;
+  }
+  .marginTop{
+    margin-top: 150px;
+  }
+  .logo{
+    height:80px;
+  }
+};
+#linkToHelp{
+    background: color($colors,primary);
+    vertical-align: middle;
+}
+}

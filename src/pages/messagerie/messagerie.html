@@ -1,0 +1,34 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-title>
+      KooDeFood
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="list-avatar-page">
+  <ion-list>
+    <ion-list-header>Today</ion-list-header>
+    <ion-item *ngFor="let product of data" (click)="viewProduct(product.cell);">
+      <ion-avatar item-start>
+        <img src='{{product.picture.thumbnail}}'>
+      </ion-avatar>
+      <h2>{{product.name.first + ' ' + product.name.last}}</h2>
+      <p>last message</p>
+      <ion-note item-end>{{product.registered}}</ion-note>
+    </ion-item>
+
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>Yesterday</ion-list-header>
+    <ion-item *ngFor="let product of data2">
+      <ion-avatar item-start>
+        <img src='{{product.picture.thumbnail}}'>
+      </ion-avatar>
+      <h2>{{product.name.first + ' ' + product.name.last}}</h2>
+      <p>last message</p>
+      <ion-note item-end>{{product.registered}}</ion-note>
+    </ion-item>
+    </ion-list>
+</ion-content>

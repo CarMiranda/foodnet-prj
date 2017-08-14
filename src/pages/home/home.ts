@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { Platform, NavController } from 'ionic-angular';
+import { Platform, NavParams, NavController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 import { Events } from 'ionic-angular';
 
 import { ConfirmationPage } from '../confirmation/confirmation';
-import { LinefeedPage } from '../linefeed/linefeed';
-import { TestGeolocaPage } from '../test-geoloca/test-geoloca';
 
-import { TestgglemapsPage } from '../testgglemaps/testgglemaps'
+import { ProfilePage } from '../profile/profile';
+import { FildactualitePage } from '../fildactualite/fildactualite';
+import { MessageriePage } from '../messagerie/messagerie';
 
 @Component({
   selector: 'page-home',
@@ -22,12 +22,15 @@ export class HomePage {
   photoSelected: boolean;
   swipe: number = 0;
 
-  constructor(public navCtrl: NavController, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer, public events: Events) {
+  tab1Root = FildactualitePage;
+  tab2Root = MessageriePage;
+  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer, public events: Events) {
     this.photoTaken = false;
     events.subscribe('post:created', (post) => {
       console.log('Post actually created!');
       document.getElementById("title").innerHTML = "Title: " + post.title;
       document.getElementById("description").innerHTML = "Description: " + post.description;
+      document.getElementById("image").innerHTML = post.imageData;
     });
   }
 
@@ -75,19 +78,9 @@ export class HomePage {
     });
   }
 
-  go(toPage: string) {
-    console.log("Swiped! Going to " + toPage);
-    if (toPage === 'Linefeed') {
-      this.navCtrl.push(LinefeedPage);
-    }
-    if (toPage === 'TestGeoloca') {
-      this.navCtrl.push(TestgglemapsPage);
-    }
-
+  goprofile(){
+    this.navCtrl.push(ProfilePage);
   }
-
-
-
 
 
 }

@@ -19,13 +19,15 @@ export class CreatePostPage {
   this.imageData = navParams.get('imageData');
     this.post = {
       title: '',
-      description: ''
+      description: '',
+      imageData: this.imageData
     }
   }
 
   logForm() {
-    
+
     console.log('Post created!');
+
     this.events.publish('post:created', this.post);
     this.navCtrl.popAll();
   }
