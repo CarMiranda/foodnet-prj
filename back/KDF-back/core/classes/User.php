@@ -18,12 +18,8 @@
         public $avatar;            // Path to avatar image file
         public $lang;              // Preferred language ( NULL = system language, then language codes, e.g. fr, en, es... )
         public $last_seen;         // Last seen timestamp
-        public $app_token;         // App generated token 
-        public $fb_token;          // FB generated token
-        public $gplus_token;       // G+ generated token
-        public $lin_token;         // LinkedIn generated token
-        public $insta_token;       // Instagram generated token
-        public $favorites;
+        public $token;         // App generated token
+        public $favorites;         // Favorite tags
         public $friends;           // An array of the user's friend
         public $groups;            // An array of groups the user belongs to
         public $updates;           // An array with fields to be updated as keys
@@ -87,15 +83,11 @@
                 $this->avatar = (isset($_REQUEST['avatar']) ? $_REQUEST['avatar'] : NULL);
                 $this->lang = (isset($_REQUEST['lang']) ? $_REQUEST['lang'] : NULL);
                 $this->last_seen = time();
+                $this->auth_method = (isset($_REQUEST['auth_method']) ? $_REQUEST['auth_method'] : NULL);
 
-                // Creation of a JWT
-                $jwt = jwt([
-                    'mail' => $this->mail,
-                    'reg_date' => $this->reg_date,
-                ]);
-                $this->partial_token = implode('.', array_slice(explode('.', $jwt), 0, 2));
-                $this->auth_method = (isset($authmethod) ? $_REQUEST['auth_method'] : NULL);
+                if (!empty($auth_method)) {
 
+                }
                 $this->fb_token = (isset($_REQUEST['fb_token']) ? $_REQUEST['fb_token'] : NULL);
                 $this->gplus_token = (isset($_REQUEST['gplus_token']) ? $_REQUEST['gplus_token'] : NULL);
                 $this->lin_token = (isset($_REQUEST['lin_token']) ? $_REQUEST['lin_token'] : NULL);
@@ -132,9 +124,9 @@
         /**
         *   Creates user instance from database. Look up is done by email.
         */
-        private function from_email($email = "") {
+        private function from_email($mail = "") {
             ORM::set_db(DB::factory('users'), 'users');
-            $user = ORM::for_table('users', 'users')->where('mail', $email)->find_one();
+            $user = ORM::for_table('users', 'users')->where('mail', $mail)->find_one();
             if ($user) {
                 $this->from_orm($user);
             }
@@ -173,12 +165,12 @@
             $that = clone $this;
             unset($that->mail);
             unset($that->password);
-            unset($that->app_token);
-            unset($that->fb_token);
-            unset($that->gplus_token);
-            unset($that->lin_token);
-            unset($that->insta_token);
+            unset($that->token);
             return json_encode($that);
+        }
+
+        public function checkPassword($pass) {
+            return password_verify($pass, $this->password);
         }
 
         /**
@@ -189,10 +181,8 @@
                 $user = new User($id);
                 $_mail = $user->mail;
                 $_pass = passwordGeneration();
-
-                
                 $_hashed_pass = password_hash($_pass, PASSWORD_BCRYPT);
-            }
+            }            
         }
 
         /**
@@ -235,14 +225,47 @@
             return $favorites;
         }
 
-        public static function addFavorite($uid, $tid) {
+        public static function addFavorites($uid, $tids) {
             $db = DB::factory('app');
-            return $db->query('INSERT INTO favorites (uid, tid) VALUES (' . $uid . ', ' . $tid .');');
+            $db->prepare('INSERT INTO favorites (uid, tid) VALUES (' . $uid . ', :tid);');
+            if (is_array($tids)) {
+                foreach ($tids as $tag_id) {
+                    $db->execute([":tid" => $tag_id]);
+                }
+                return TRUE;
+            } else if (!empty($tids)) {
+                $db->execute([":tid" => $tids]);
+                return TRUE;
+            } else {
+                return FALSE;
+            }
         }
 
-        public static function deleteFavorite($uid, $tid) {
+        public static function updateFavorites($uid, $toAdd, $toDel) {
+            $res = TRUE;
+            if (!empty($toAdd)) {
+                $res = $res && self::addFavorites($uid, $toAdd);
+            }
+            if (!empty($toDel)) {
+                $res = $res && self::deleteFavorites($uid, $toDel);
+            }
+            return $res;
+        }
+
+        public static function deleteFavorites($uid, $tids) {
             $db = DB::factory('app');
-            return $db->query('DELETE FROM favorites WHERE (uid = ' . $uid . ' AND tid = ' . $tid . ');');
+            $db->prepare('DELETE FROM favorites WHERE (uid = ' . $uid . ' AND tid = :tid);');
+            if (is_array($tids)) {
+                foreach ($tids as $tag_id) {
+                    $db->execute([":tid" => $tag_id]);
+                }
+                return TRUE;
+            } else if (!empty($tids)) {
+                $db->execute([":tid" => $tids]);
+                return TRUE;
+            } else {
+                return FALSE;
+            }
         }
 
         /**
@@ -267,7 +290,7 @@
         public static function addToGroup($uid, $gid, $admin = 0) {
             $db = DB::factory('app');
             return $db->query('INSERT INTO users_x_groups (uid, gid, admin) VALUES (' . $uid . ', ' . $gid . ', ' . $admin . ');');
-            }
+        }
 
         public static function updateOnGroup($uid, $gid, $admin) {
             $db = DB::factory('app');

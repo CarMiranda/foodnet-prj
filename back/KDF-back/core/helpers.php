@@ -7,25 +7,49 @@
     */
     function passwordGeneration($len = 10) {
         $alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!_-*?";
-        $count = mb_strlen($chars);
+        $count = mb_strlen($alpha);
+        $pass = "";
         
         for ($i = 0; $i < $len; ++$i) {
             $index = rand(0, $count - 1);
-            $pass .= mb_substr($chars, $index - 1);
+            $pass .= mb_substr($alpha, $index - 1, 1);
         }
 
         return $pass;
     }
 
-    function base64url_decode($data) {
-        $rem = strlen($data) % 4;
-        if ($rem) {
-            $padlen = 4 - $rem;
-            $data .= str_repeat('=', $padlen);
-        }
+    /**
+    *   Check app token from Authorization header in request
+    *   @return StdObject jwt A parsed Json Web Token
+    */
+    function checkAuthToken() {
 
-        return base64_decode($data);
+        // First get all headers from request
+        $headers = getallheaders();
+
+        // Check if Authorization header value is Bearer {JWT}
+        if (!preg_match('/Bearer\s.+/', $headers['Authorization'])) {
+            throw new Exception("Invalid authorization header.");
+        }
+        $auth = explode(' ', $headers['Authorization']);
+        if (count($auth) != 2 || !validateJWT($auth[1])) {
+            throw new Exception("Invalid authentication token.");
+        }
+        try {
+            $jwt = decodeJWT($auth[1]);
+        } catch (Exception $e) {
+            throw new Exception("Error decoding JWT.", 0, $e);
+        }
+        if (empty($jwt->id)) {
+            throw new Exception("No identifier in authentication token.");
+        }
+        
+        return $jwt;
     }
+
+    /**
+    *   Check service token from Authorization
+    */
 
     /**
     *   Encodes data with MIME base64.
@@ -38,12 +62,28 @@
     }
 
     /**
+    *   Decodes data with MIME base64 (url safe).
+    *
+    *   @param string data
+    *   @return string
+    */
+    function base64url_decode($data) {
+        $rem = strlen($data) % 4;
+        $_data = $data;
+        if ($rem) {
+            $pad = 4 - $rem;
+            $_data .= str_repeat('=', $pad);
+        }
+        return base64_decode(strtr($_data, '-_', '+/'));
+    }
+
+    /**
     *   Creates a new JSON Web Token using the user information
     *
     *   @param array An array with key => values of user specific fields, to keep jwt unique
     *   @return string A valid JSON Web Token based on user information
     */
-    function jwt($user_spec = []) {
+    function encodeJWT($user_spec = []) {
         if (!empty($user_spec)) {
             // Get configuration from files
             $header = base64url_encode(file_get_contents(JWTHEADER)); // Contains fields and info, so we can encode it right away
@@ -67,33 +107,58 @@
         return false;
     }
 
-    function validateJWT($jwt) {
-        list($header, $payload, $secret) = explode('.', $jwt);
-        return hash_equals($jwt);
-    }
-
     /**
-    *   Checks if the token corresponds to the user with specified id.
-    *
-    *   @param integer id Id of the user authentifying
-    *   @param string token Token to be checked
-    *   @return boolean Whether the token corresponds to the user or not.
+    *   
+    *   @param string jwt A string representing and encoded JWT
+    *   @return StdObject An object representing the JWT 
     */
-    function checkToken($id, $token, $service = NULL) {
-        $user = new User($id);
-        if ($user) {
-            if ($service === NULL) {
-                return $user->app_token === $token;
-            } else {
-                $serv_token = $service . "_token";
-                return $user->{$serv_token} === $token;
-            }
+    function decodeJWT($jwt) {
+        $_jwt = explode('.', $jwt);
+        if (count($_jwt) !== 3) {
+            throw new Exception("Invalid authentication token.");
         }
-        return false;
+        return array_map('json_decode', array_map("base64url_decode", $_jwt));
+    }
+
+    /**
+    *   Validates a JWT with the secret pass phrase
+    *
+    *   @param string jwt The JWT to validate
+    *   @return boolean
+    */
+    function validateJWT($jwt = '', $service = NULL) {
+        if (!empty($jwt)) {
+            if ($service === NULL) {
+                $secret = json_decode(file_get_contents(JWTSECRET)); // Secret pass phrase
+            } else {
+                switch ($service) {
+                    case "facebook" :
+                        $secret = json_decode(file_get_contents(JWTSECRETFB));
+                    break;
+                    case "googleplus" :
+                        $secret = json_decode(file_get_contents(JWTSECRETGP));
+                    break;
+                    case "instagram" :
+                        $secret = json_decode(file_get_contents(JWTSECRETIG));
+                    break;
+                    case "linkedin" :
+                        $secret = json_decode(file_get_contents(JWTSECRETLI));
+                    break;
+                }
+            }
+            list($header, $payload, $signature) = explode('.', $jwt);
+            return hash_equals(base64url_decode($signature), hash_hmac('SHA256', "$header.$payload", $secret, true));
+        }
+        return FALSE;
     }
 
     /**
     *
+    *   Transforms an ORM instance into an array as field_name => value
+    *   
+    *   @param ORM orm_obj
+    *   @param array fields Fields to extract
+    *   @return array
     */
     function ORM2Array($orm_obj, $fields = []) {
         if (!empty($fields)) {
@@ -106,4 +171,28 @@
             return $res;
         }
         return FALSE;
+    }
+
+    /**
+    *
+    *
+    */
+    function parsePHP($param) {
+        if (is_string($param)) {
+            if ($param[0] == '[' && $param[strlen($param) - 1] == ']') {
+                return array_map('urldecode', explode(',', trim($param, '[]')));
+            } else if (preg_match("/^[^0].[0-9]+/")) {
+                return (int)$param;
+            } else {
+                return urldecode($param);
+            }
+        }
+    }
+
+    /**
+    *
+    *
+    */
+    function parseRequestBody() {
+        return json_decode(file_get_contents("php://input"));
     }
