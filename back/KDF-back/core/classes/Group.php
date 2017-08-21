@@ -33,4 +33,14 @@
             $res = $db->query('UPDATE `' . APP__DB_NAME . '`.`groups`');
             return $res;
         }
+
+        public static function isAdmin($id, $gid) {
+            ORM::set_db(DB::factory('app'), 'app');
+            $res = ORM::for_table('users_x_groups')
+                        ->select('status')
+                        ->where('uid', $id)
+                        ->where('gid', $gid)
+                        ->find_one();
+            return $res == 1;
+        }
     }

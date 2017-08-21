@@ -27,7 +27,9 @@
         // First get all headers from request
         $headers = getallheaders();
 
-        // Check if Authorization header value is Bearer {JWT}
+        if (empty($headers['Authorization'])) {
+            return false;
+        }
         if (!preg_match('/Bearer\s.+/', $headers['Authorization'])) {
             throw new Exception("Invalid authorization header.");
         }
@@ -166,7 +168,7 @@
                 foreach ($fields as $field) {
                     $arr[$field] = $row->{$field};
                 }
-                $res[] = $arr;
+                $res[] = (object)$arr;
             }
             return $res;
         }

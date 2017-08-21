@@ -2,27 +2,11 @@
 
     class User {
 
-        public $id;                // ID, unique
-        public $uname;             // User name, unique
-        public $mail;              // Email, unique
-        public $password;          // Password
-        public $reg_date;          // Registration timestamp
-        public $status;            // Status ( NULL = waiting validation, 0 = active, 1 = banned, 2 = scheduled to be deleted )
-        public $fname;             // First name
-        public $lname;             // Last name
-        public $address;           // Address
-        public $lat;               // Latitude
-        public $lon;               // Longitude
-        public $gender;            // Gender ( NULL = not specified, 0 = Male, 1 = Female )
-        public $dob;               // Date of birth timestamp
-        public $avatar;            // Path to avatar image file
-        public $lang;              // Preferred language ( NULL = system language, then language codes, e.g. fr, en, es... )
-        public $last_seen;         // Last seen timestamp
-        public $token;         // App generated token
-        public $favorites;         // Favorite tags
-        public $friends;           // An array of the user's friend
-        public $groups;            // An array of groups the user belongs to
-        public $updates;           // An array with fields to be updated as keys
+        private $orm;               // Corresponding ORM
+        private $favorites;         // Favorite tags
+        private $friends;           // An array of the user's friend
+        private $groups;            // An array of groups the user belongs to
+        private $chats;
 
         /** 
         *   Constructors
@@ -287,19 +271,28 @@
             return $groups;
         }
 
-        public static function addToGroup($uid, $gid, $admin = 0) {
-            $db = DB::factory('app');
-            return $db->query('INSERT INTO users_x_groups (uid, gid, admin) VALUES (' . $uid . ', ' . $gid . ', ' . $admin . ');');
+        public static function addToGroup($id, $uid, $gid, $status = 0) {
+            if (Group::isAdmin($id, $gid)) {
+                $db = DB::factory('app');
+                return $db->query('INSERT INTO users_x_groups (uid, gid, status) VALUES (' . $uid . ', ' . $gid . ', ' . $status . ');');
+            }
+            return false;
         }
 
-        public static function updateOnGroup($uid, $gid, $admin) {
-            $db = DB::factory('app');
-            return $db->query('UPDATE users_x_groups SET admin = ' . $admin . ' WHERE (uid = ' . $uid . ' AND gid = ' . $gid . ');');
+        public static function updateOnGroup($id, $uid, $gid, $status) {
+            if (Group::isAdmin($id, $gid)) {
+                $db = DB::factory('app');
+                return $db->query('UPDATE users_x_groups SET status = ' . $status . ' WHERE (uid = ' . $uid . ' AND gid = ' . $gid . ');');
+            }
+            return false;
         }
 
-        public static function removeFromGroup($uid, $gid) {
-            $db = DB::factory('app');
-            return $db->query('DELETE FROM users_x_groups WHERE (uid = ' . $uid . ' AND gid = ' . $gid . ');');
+        public static function removeFromGroup($id, $uid, $gid) {
+            if ($id == $uid || Group::isAdmin($id, $gid)) {
+                $db = DB::factory('app');
+                return $db->query('DELETE FROM users_x_groups WHERE (uid = ' . $uid . ' AND gid = ' . $gid . ');');
+            }
+            return false;
         }
 
         /**
@@ -337,5 +330,20 @@
 
         /**
         *  End of Friends
+        */
+
+        /**
+        *   Chats
+        */
+
+        public static function getChats($id) {
+            ORM::set_db(DB::factory('users'), 'users');
+            $res = ORM::for_table("chats")
+                   ->where_raw('user_id1 = ? OR user_id2 = ?', [$id, $id])
+                   ->find_many();
+            return $res;
+        }
+        /**
+        *   End of Chats
         */
     }
