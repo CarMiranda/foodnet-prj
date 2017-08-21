@@ -18,7 +18,24 @@
     </ion-buttons>
 
   </ion-toolbar>
+  <ion-searchbar id="gauche" (ionFocus)="focus()" (ionInput)="getItems($event)"></ion-searchbar>
+  <button ion-button color="secondary" (click)="selectFromGallery()" clear *ngIf="isOn"> Advanced research</button>
+  <ion-list>
+    <ion-item *ngFor="let item of items">
+      <p>{{ item }}</p>
+    </ion-item>
+  </ion-list>
 </ion-header>
+
+<ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+
+
+<ion-list>
+  <ion-item *ngFor="let item of items">
+    {{ item }}
+  </ion-item>
+</ion-list>
+
 
 
 <ion-tabs>

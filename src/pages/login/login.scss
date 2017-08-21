@@ -1,5 +1,26 @@
 page-login {
-#login{
-  background: color($colors,primary);
-}
+  #login{
+    background: color($colors,primary);
+  }
+  h2{
+    margin-top: 70px;
+    text-align: center;
+      color : color($colors,light);
+    }
+  .logo{
+    height:70px;
+  }
+
+  #logos{
+      display:block;
+      vertical-align: middle;
+      text-align: justify;
+      padding: 40px;
+  }
+  #logos::after{
+    display:inline-block;
+    width:100%;
+    content: '';
+    vertical-align:top;
+  }
 }

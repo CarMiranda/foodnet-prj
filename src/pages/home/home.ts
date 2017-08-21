@@ -21,9 +21,11 @@ export class HomePage {
   cameraUrl: SafeUrl;
   photoSelected: boolean;
   swipe: number = 0;
-
+  items:any[];
   tab1Root = FildactualitePage;
   tab2Root = MessageriePage;
+  private isOn: boolean = false;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer, public events: Events) {
     this.photoTaken = false;
     events.subscribe('post:created', (post) => {
@@ -32,6 +34,20 @@ export class HomePage {
       document.getElementById("description").innerHTML = "Description: " + post.description;
       document.getElementById("image").innerHTML = post.imageData;
     });
+
+  }
+  
+  focus(){
+    this.isOn=true;
+  }
+
+  getItems(ev) {
+    var val = ev.target.value;  //val : valeur inserée dans la searchbar
+    if (val && val.trim() != '') { //si vide on afficher rien du tout
+      this.items  = ["Choucroute", "Pizza", "Nutella"];
+    }else{
+      this.items = [];
+    }
   }
 
   selectFromGallery() {
