@@ -137,12 +137,12 @@
                             } else {
                                 throw new Exception($error_msg);
                             }
-                        break;
+                        break; // DONE
                         case "friends" :
                             if ($method == "GET") {
                                 // Get friends of specified user
                                 if (!empty($_REQUEST["id"])) {
-                                    $result = User::getFriends($_REQUEST["id"]);
+                                    $result = User::getFriendships($_REQUEST["id"]);
                                 } else {
                                     $result = User::getFriendships($identifier);
                                 }

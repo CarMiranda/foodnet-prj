@@ -19,7 +19,7 @@
         */
         public function __construct($id = NULL, $fetch_favorites = FALSE, $fetch_friends = FALSE, $fetch_groups = FALSE) {
             try {
-                if ($id === NULL) {
+                if (emtpy($id)) {
                     $this->from_request();
                 } else if (is_numeric($id)) {
                     $this->from_id($id);
@@ -32,15 +32,15 @@
                 }
 
                 if ($fetch_favorites) {
-                    $this->favorites = self::getFavorites($this->id);
+                    $this->favorites = self::getFavorites($this->orm->id);
                 }
                 
                 if ($fetch_friends) {
-                    $this->friends = self::getFriendships($this->id);
+                    $this->friends = self::getFriendships($this->orm->id);
                 }
 
                 if ($fetch_groups) {
-                    $this->groups = self::getGroups($this->id);
+                    $this->groups = self::getGroups($this->orm->id);
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
@@ -54,28 +54,28 @@
             if (empty($_REQUEST['uname']) || empty($_REQUEST['mail']) || empty($_REQUEST['password']) || empty($_REQUEST['fname']) || empty($_REQUEST['lname'])) {
                 throw new Exception();
             } else {
-                $this->id = (isset($_REQUEST['id']) ? $_REQUEST['id'] : NULL);
-                $this->uname = $_REQUEST['uname'];
-                $this->mail = $_REQUEST['mail'];
-                $this->password = password_hash($_REQUEST['password'], PASSWORD_BCRYPT);
-                $this->reg_date = (isset($_REQUEST['regdate']) ? $_REQUEST['regdate'] : time());
-                $this->status = (isset($_REQUEST['status']) ? $_REQUEST['status'] : NULL);
-                $this->fname = $_REQUEST['fname'];
-                $this->lname = $_REQUEST['lname'];
-                $this->gender = (isset($_REQUEST['gender']) ? $_REQUEST['gender'] : NULL);
-                $this->dob = (isset($_REQUEST['dob']) ? $_REQUEST['dob'] : NULL);
-                $this->avatar = (isset($_REQUEST['avatar']) ? $_REQUEST['avatar'] : NULL);
-                $this->lang = (isset($_REQUEST['lang']) ? $_REQUEST['lang'] : NULL);
-                $this->last_seen = time();
-                $this->auth_method = (isset($_REQUEST['auth_method']) ? $_REQUEST['auth_method'] : NULL);
-
-                if (!empty($auth_method)) {
-
+                $this->from_email($_REQUEST['mail']);
+                if (!empty($this->orm->id)) {
+                    throw new Exception("User with specified mail already exists.");
+                } else {
+                    $this->orm->id = (isset($_REQUEST['id']) ? $_REQUEST['id'] : NULL);
+                    $this->orm->uname = $_REQUEST['uname'];
+                    $this->orm->mail = $_REQUEST['mail'];
+                    $this->orm->password = password_hash($_REQUEST['password'], PASSWORD_BCRYPT);
+                    $this->orm->reg_date = (isset($_REQUEST['regdate']) ? $_REQUEST['regdate'] : time());
+                    $this->orm->status = (isset($_REQUEST['status']) ? $_REQUEST['status'] : NULL);
+                    $this->orm->fname = $_REQUEST['fname'];
+                    $this->orm->address = $_REQUEST["address"];
+                    $this->orm->code_postal = $_REQUEST["code_postal"];
+                    $this->orm->lon = $_REQUEST["lon"];
+                    $this->orm->lat = $_REQUEST["lat"];
+                    $this->orm->lname = $_REQUEST['lname'];
+                    $this->orm->gender = (isset($_REQUEST['gender']) ? $_REQUEST['gender'] : NULL);
+                    $this->orm->dob = (isset($_REQUEST['dob']) ? $_REQUEST['dob'] : NULL);
+                    $this->orm->avatar = (isset($_REQUEST['avatar']) ? $_REQUEST['avatar'] : NULL);
+                    $this->orm->lang = (isset($_REQUEST['lang']) ? $_REQUEST['lang'] : NULL);
+                    $this->orm->last_seen = time();
                 }
-                $this->fb_token = (isset($_REQUEST['fb_token']) ? $_REQUEST['fb_token'] : NULL);
-                $this->gplus_token = (isset($_REQUEST['gplus_token']) ? $_REQUEST['gplus_token'] : NULL);
-                $this->lin_token = (isset($_REQUEST['lin_token']) ? $_REQUEST['lin_token'] : NULL);
-                $this->insta_token = (isset($_REQUEST['insta_token']) ? $_REQUEST['insta_token'] : NULL);
             }
         }
 
@@ -86,10 +86,7 @@
         */
         private function from_id($id = 0) {
             ORM::set_db(DB::factory('users'), 'users');
-            $user = ORM::for_table('users', 'users')->find_one($id);
-            if ($user) {
-                $this->from_orm($user);
-            }
+            $this->orm = ORM::for_table('users', 'users')->find_one($id);
         }
 
         /**
@@ -99,10 +96,7 @@
         */
         private function from_username($uname = "") {
             ORM::set_db(DB::factory('users'), 'users');
-            $user = ORM::for_table('users', 'users')->where('uname', $uname)->find_one();
-            if ($user) {
-                $this->from_orm($user);
-            }
+            $this->orm = ORM::for_table('users', 'users')->where('uname', $uname)->find_one();
         }
 
         /**
@@ -110,32 +104,7 @@
         */
         private function from_email($mail = "") {
             ORM::set_db(DB::factory('users'), 'users');
-            $user = ORM::for_table('users', 'users')->where('mail', $mail)->find_one();
-            if ($user) {
-                $this->from_orm($user);
-            }
-        }
-
-        /**
-        *   Fills the user instance with an ORM result set
-        */
-        private function from_orm($user) {
-            $this->id = $user->id;
-            $this->uname = $user->uname;
-            $this->mail = $user->mail;
-            $this->password = $user->password;
-            $this->reg_date = $user->reg_date;
-            $this->status = $user->status;
-            $this->fname = $user->fname;
-            $this->lname = $user->lname;
-            $this->address = $user->address;
-            $this->lat = $user->lat;
-            $this->lon = $user->lon;
-            $this->gender = $user->gender;
-            $this->dob = $user->dob;
-            $this->avatar = $user->avatar;
-            $this->lang = $user->lang;
-            $this->last_seen = $user->last_seen;
+            $this->orm = ORM::for_table('users', 'users')->where('mail', $mail)->find_one();
         }
 
         /**
@@ -147,26 +116,50 @@
         */
         public function show() {
             $that = clone $this;
-            unset($that->mail);
-            unset($that->password);
-            unset($that->token);
+            unset($that->orm->mail);
+            unset($that->orm->password);
             return json_encode($that);
         }
 
-        public function checkPassword($pass) {
-            return password_verify($pass, $this->password);
+        private function checkPassword($pass) {
+            return password_verify($pass, $this->orm->password);
+        }
+
+        public static function login($id, $request_body) {
+            $user = new User($id);
+            if ($user || $user->checkPassword($request_body->password)) {
+                $var_fields = [
+                    "iat" => time(),
+                    "id" => $user->id,
+                ];
+                return encodeJWT([]);
+            }
+        }
+
+        public function __get($key) {
+            return $this->orm->{$key};
+        }
+
+        public function __set($key, $value) {
+            $this->orm->{$key} = $value;
         }
 
         /**
         *
         */
-        public static function passwordReinit($id = NULL) {
-            if (!empty($id)) {
-                $user = new User($id);
-                $_mail = $user->mail;
-                $_pass = passwordGeneration();
-                $_hashed_pass = password_hash($_pass, PASSWORD_BCRYPT);
+        public static function passwordReinit($mail = NULL) {
+            if (!empty($mail)) {
+                $user = new User($mail);
+                $pass = passwordGeneration();
+                $hashed_pass = password_hash($pass, PASSWORD_BCRYPT);
+                $user->password = $hashed_pass;
+                $user->save();
+                sendReinitMail($mail, $pass);
             }            
+        }
+
+        public function save() {
+            $this->orm->save();
         }
 
         /**
@@ -205,8 +198,7 @@
                         ->left_outer_join('favorites', 'favorites.tid = tags.id')
                         ->where('favorites.uid', $id)
                         ->find_many();
-            $favorites = ORM2Array($res, ['id', 'name']);
-            return $favorites;
+            return ORM2Array($res, ['id', 'name']);
         }
 
         public static function addFavorites($uid, $tids) {
@@ -302,7 +294,6 @@
         /**
         *  Friends
         */
-
         public static function getFriendships($id) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table('users', 'users')
@@ -339,7 +330,8 @@
         public static function getChats($id) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table("chats")
-                   ->where_raw('user_id1 = ? OR user_id2 = ?', [$id, $id])
+                   ->select('id, uid2')
+                   ->where('uid1', $id)
                    ->find_many();
             return $res;
         }

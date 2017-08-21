@@ -8,6 +8,7 @@ CREATE TABLE `users` (
     `fname` VARCHAR(50) NOT NULL,
     `lname` VARCHAR(50) NOT NULL,
     `address` VARCHAR(255),
+    `code_postal` INT(5) NOT NULL,
     -- Store Longitude and Latitude for geolocation search
     `lon` DECIMAL(11,8) NOT NULL, -- Ranges from -180 to +180
     `lat` DECIMAL(10,8) NOT NULL, -- Ranges from -90 to +90
