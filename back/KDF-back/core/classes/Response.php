@@ -1,7 +1,7 @@
 <?php
     class Response {
-        private $data;
-        private $status;
+        public $status;
+        public $data;
 
         public function __construct() {
             $this->status = "";

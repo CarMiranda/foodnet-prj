@@ -3,6 +3,5 @@
         `name` VARCHAR(255) NOT NULL,
         `avatar` VARCHAR(255) NOT NULL,
         `visibility` TINYINT(1) UNSIGNED DEFAULT 1,
-        PRIMARY KEY (`id`),
-        UNIQUE (`name`)
+        PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

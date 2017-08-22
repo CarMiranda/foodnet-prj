@@ -42,7 +42,7 @@
         } catch (Exception $e) {
             throw new Exception("Error decoding JWT.", 0, $e);
         }
-        if (empty($jwt->id)) {
+        if (empty($jwt[1]->id)) {
             throw new Exception("No identifier in authentication token.");
         }
         

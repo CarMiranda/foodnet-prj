@@ -22,21 +22,34 @@
             return $res;
         }
 
-        public static function addGroup($name, $avatar, $visibility) {
-            $db = DB::factory('app');
-            $res = $db->query('INSERT INTO `' . APP__DB_NAME . '`.`groups` (`name`, `avatar`, `visibility`) VALUES (' . $name . ', ' . $avatar . ', ' . $visibility . ');');
-            return $res;
+        public static function create($id, $group_info) {
+            ORM::set_db(DB::factory('app'), 'app');
+            $group = ORM::for_table('groups', 'app')->create();
+            if (isset($group_info->id)) unset($group_info->id);
+            $_ginfo = (array)$group_info;
+            foreach ($_ginfo as $key => $value) {
+                $group->{$key} = $value;
+            }
+            $group->save();
+            return TRUE;
         }
 
-        public static function updateGroup($uid, $gid, $admin) {
-            $db = DB::factory('app');
-            $res = $db->query('UPDATE `' . APP__DB_NAME . '`.`groups`');
-            return $res;
+        public static function update($uid, $group_info) {
+            ORM::set_db(DB::factory('app'), 'app');
+            $group = ORM::for_table('groups', 'app')
+                     ->find_one($group_info->id);
+            $_ginfo = (array)$group_info;
+            array_shift($_ginfo);
+            foreach ($_ginfo as $key => $value) {
+                $group->{$key} = $value;
+            }
+            $group->save();
+            return TRUE;
         }
 
         public static function isAdmin($id, $gid) {
             ORM::set_db(DB::factory('app'), 'app');
-            $res = ORM::for_table('users_x_groups')
+            $res = ORM::for_table('users_x_groups', 'app')
                         ->select('status')
                         ->where('uid', $id)
                         ->where('gid', $gid)

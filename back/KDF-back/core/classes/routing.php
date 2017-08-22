@@ -6,21 +6,26 @@
     *   You can check the htaccess file for more details.
     */
     
-    require_once "/core/classes/Response.php";
+    define("ALLOWS_PUT", FALSE);
+    define("ALLOWS_DELETE", FALSE);
+    require_once "Response.php";
     $response = new Response();
 
     try {
         if (empty(rtrim($_REQUEST["path"], '/'))) {
             // URI is empty. Send a welcome message.
-            $response->sucess("Welcome to KDF back-end API");
+            $response->success("Welcome to KDF back-end API");
         } else {
             // Else, we want to interact with the api ressources
-            $method = $_REQUEST["REQUEST_METHOD"];
-            if (!in_array($method, ["GET", "POST", "PUT", "DELETE"])) {
+            $method = $_SERVER["REQUEST_METHOD"];
+            $accepted_methods = ["GET", "POST"];
+            if (ALLOWS_PUT) $accepted_methods[] = "PUT";
+            if (ALLOWS_DELETE) $accepted_methods[] = "DELETE";
+            if (!in_array($method, $accepted_methods)) {
                 // Take care of unwanted requests
-                throw new Exception("Unhandled header.");
+                throw new Exception("Unhandled header $method.");
             }
-            $ressource = explode(rtrim($_REQUEST["path"], '/'));
+            $ressource = explode('/', rtrim($_REQUEST["path"], '/'));
             // Get version
             if (preg_match("/^v([0-9]+\.?)+$/", $ressource[0])) {
                 $version = array_shift($ressource);
@@ -30,7 +35,7 @@
                 // Keep user info secure by checking authentication token whichever the user action
                 $decoded_jwt = checkAuthToken();
                 if ($decoded_jwt) {
-                    $identifier = $decoded_jwt->id;
+                    $identifier = $decoded_jwt[1]->id;
                     switch ($ressource[1]) {
                         case "favorites" :
                             if ($method == "GET") {
@@ -46,21 +51,22 @@
                                 if (empty($request_body)) {
                                     throw new Exception("No tags specified in request.");
                                 }
+                                if (!empty($request_body->action)) {
+                                    $method = $request_body->action;
+                                }
                                 if ($method == "POST") {
                                     // Create new favorite for specified user
-                                    $add_tags = $request_body->add_tags;
-                                    $result = User::addFavorites($identifier, $add_tags);
+                                    $result = User::addFavorites($identifier, $request_body->add_tags);
                                     $error_msg = "Error adding favorites.";
                                 } else if ($method == "PUT") {
                                     // Update favorites (add and remove)
                                     $add_tags = $request_body->add_tags;
                                     $remove_tags = $request_body->remove_tags;
-                                    $result = User::updateFavorites($identifier, $add_tags, $remove_tags);
+                                    $result = User::updateFavorites($identifier, $request_body->add_tags, $request_body->remove_tags);
                                     $error_msg = "Error updating favorites.";
                                 } else if ($method == "DELETE") {
-                                    $remove_tags = $request_body->remove_tags;
-                                    $result = User::deleteFavorites($identifier, $remove_tags);
-                                    $error_msg = "Error adding favorites.";
+                                    $result = User::deleteFavorites($identifier, $request_body->remove_tags);
+                                    $error_msg = "Error deleting favorites.";
                                 }
                             }
 
@@ -84,6 +90,9 @@
                                 $request_body = parseRequestBody();
                                 if (empty($request_body)) {
                                     throw new Exception("No groups specified in request.");
+                                }
+                                if (!empty($request_body->action)) {
+                                    $method = $request_body->action;
                                 }
                                 if ($method == "POST") {
                                     // Add user to specified group
@@ -152,6 +161,10 @@
                                 if (empty($request_body)) {
                                     throw new Exception("No friendship information specified in request.");
                                 }
+
+                                if (!empty($request_body->action)) {
+                                    $method = $request_body->action;
+                                }
                                 if ($method == "POST") {
                                     // Create new friendship relation
                                     $result = User::addFriendship($identifier, $request_body->friend_id);
@@ -172,7 +185,7 @@
                             } else {
                                 throw new Exception($error_msg);
                             }
-                        break;
+                        break; // DONE
                         default : 
                             if ($method == "GET") {
                                 // Get user information
@@ -184,6 +197,12 @@
                                 $error_msg = "Error fetching user.";
                             } else {
                                 $request_body = parseRequestBody();
+                                if (empty($request_body)) {
+                                    throw new Exception("Empty request body.");
+                                }
+                                if (!empty($request_body->action)) {
+                                    $method = $request_body->action;
+                                }
                                 if ($method == "PUT") {
                                     // Change user information
                                     $result = User::updateUser($identifier, $request_body);
@@ -218,7 +237,7 @@
                             throw new Exception($error_msg);
                         }
                     } else {
-                        throw new Exception("Bad request.");
+                        throw new Exception("Bad users request.");
                     }
                 }
             } else if ($ressource[0] == "posts") {
@@ -226,7 +245,7 @@
                 if (!$decoded_jwt) {
                     throw new Exception("No authorization header.");
                 }
-                $identifier = $decoded_jwt->id;
+                $identifier = $decoded_jwt[1]->id;
                 if ($method == "GET") {
                     switch ($ressource[1]) {
                         case "user" :
@@ -288,6 +307,9 @@
                     $result = Group::get($_REQUEST["group_id"]);
                 } else {
                     $request_body = parseRequestBody();
+                    if (!empty($request_body->action)) {
+                        $method = $request_body->action;
+                    }
                     if ($method == "POST") {
                         // Create new group
                         $result = Group::create($identifier, $request_body->group_info);
@@ -353,11 +375,12 @@
                     throw new Exception("Unhandled tags action.");
                 }
             } else {
-                throw new Exception("Bad request.");
+                throw new Exception("Bad request. Ressource not found: {$ressource[0]}");
             }
         }
     } catch (Exception $e) {
         $response->exception($e);
     } finally {
-        $response->json();
+        header('Content-type: text/json;charset=UTF-8');
+        echo $response->json();
     }

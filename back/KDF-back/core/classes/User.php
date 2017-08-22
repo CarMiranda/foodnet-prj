@@ -19,7 +19,7 @@
         */
         public function __construct($id = NULL, $fetch_favorites = FALSE, $fetch_friends = FALSE, $fetch_groups = FALSE) {
             try {
-                if (emtpy($id)) {
+                if (empty($id)) {
                     $this->from_request();
                 } else if (is_numeric($id)) {
                     $this->from_id($id);
@@ -115,24 +115,29 @@
         *
         */
         public function show() {
-            $that = clone $this;
-            unset($that->orm->mail);
-            unset($that->orm->password);
-            return json_encode($that);
+            $that = $this->orm->as_array();
+            unset($that["mail"]);
+            unset($that["password"]);
+            $that["favorites"] = $this->favorites;
+            $that["friends"] = $this->friends;
+            $that["groups"] = $this->groups;
+            return (object)$that;
         }
 
         private function checkPassword($pass) {
             return password_verify($pass, $this->orm->password);
         }
 
-        public static function login($id, $request_body) {
-            $user = new User($id);
+        public static function login($request_body) {
+            $user = new User($request_body->id);
             if ($user || $user->checkPassword($request_body->password)) {
                 $var_fields = [
                     "iat" => time(),
                     "id" => $user->id,
                 ];
-                return encodeJWT([]);
+                return encodeJWT($var_fields);
+            } else {
+                throw new Exception("Error authentifying.");
             }
         }
 
@@ -194,23 +199,39 @@
         public static function getFavorites($id) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('tags', 'app')
-                        ->select_many(['tags.id', 'tags.name'])
+                        ->select('tags.id', 'id')
+                        ->select('tags.name', 'name')
                         ->left_outer_join('favorites', 'favorites.tid = tags.id')
                         ->where('favorites.uid', $id)
                         ->find_many();
-            return ORM2Array($res, ['id', 'name']);
+            foreach ($res as $row) {
+                $favs[] = (object)$row->as_array();
+            }
+            return $favs;
         }
 
         public static function addFavorites($uid, $tids) {
             $db = DB::factory('app');
-            $db->prepare('INSERT INTO favorites (uid, tid) VALUES (' . $uid . ', :tid);');
+            $stmt = $db->prepare('INSERT INTO favorites (uid, tid) VALUES (' . $uid . ', :tid);');
             if (is_array($tids)) {
                 foreach ($tids as $tag_id) {
-                    $db->execute([":tid" => $tag_id]);
+                    try {
+                        $stmt->execute([":tid" => $tag_id]);
+                    } catch (Exception $e) {
+                        if (strpos($e->getMessage(), "Duplicate entry") == FALSE) {
+                            throw $e;
+                        }
+                    }
                 }
                 return TRUE;
             } else if (!empty($tids)) {
-                $db->execute([":tid" => $tids]);
+                try {
+                    $stmt->execute([":tid" => $tids]);
+                } catch (Exception $e) {
+                    if (strpos($e->getMessage(), "Duplicate entry") == FALSE) {
+                        throw $e;
+                    }
+                }
                 return TRUE;
             } else {
                 return FALSE;
@@ -230,14 +251,26 @@
 
         public static function deleteFavorites($uid, $tids) {
             $db = DB::factory('app');
-            $db->prepare('DELETE FROM favorites WHERE (uid = ' . $uid . ' AND tid = :tid);');
+            $stmt = $db->prepare('DELETE FROM favorites WHERE (uid = ' . $uid . ' AND tid = :tid);');
             if (is_array($tids)) {
                 foreach ($tids as $tag_id) {
-                    $db->execute([":tid" => $tag_id]);
+                    try {
+                        $stmt->execute([":tid" => $tag_id]);
+                    } catch (Exception $e) {
+                        if (strpos($e->getMessage(), "Duplicate entry") == FALSE) {
+                            throw $e;
+                        }
+                    }
                 }
                 return TRUE;
             } else if (!empty($tids)) {
-                $db->execute([":tid" => $tids]);
+                try {
+                    $stmt->execute([":tid" => $tids]);
+                } catch (Exception $e) {
+                    if (strpos($e->getMessage(), "Duplicate entry") == FALSE) {
+                        throw $e;
+                    }
+                }
                 return TRUE;
             } else {
                 return FALSE;
@@ -255,28 +288,42 @@
         public static function getGroups($id) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('groups', 'app')
-                        ->select_many(['groups.id', 'groups.name'])
+                        ->select('groups.id', 'id')
+                        ->select('groups.name', 'name')
                         ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.gid')
                         ->where('users_x_groups.uid', $id)
                         ->find_many();
-            $groups = ORM2Array($res, ['id', 'name']);
-            return $groups;
+            return (object)$groups->as_array();
         }
 
         public static function addToGroup($id, $uid, $gid, $status = 0) {
             if (Group::isAdmin($id, $gid)) {
-                $db = DB::factory('app');
-                return $db->query('INSERT INTO users_x_groups (uid, gid, status) VALUES (' . $uid . ', ' . $gid . ', ' . $status . ');');
+                ORM::set_db(DB::factory('app'), 'app');
+                $relation = ORM::for_table('users_x_groups', 'app')->create();
+                $relation->set([
+                    'uid' => $uid,
+                    'gid' => $gid,
+                    'status' => $status
+                ]);
+                $relation->save();
+                return TRUE;
             }
-            return false;
+            return FALSE;
         }
 
         public static function updateOnGroup($id, $uid, $gid, $status) {
             if (Group::isAdmin($id, $gid)) {
-                $db = DB::factory('app');
-                return $db->query('UPDATE users_x_groups SET status = ' . $status . ' WHERE (uid = ' . $uid . ' AND gid = ' . $gid . ');');
+                ORM::set_db(DB::factory('app'), 'app');
+                $relation = ORM::for_table('users_x_groups', 'app')
+                            ->use_id_column('uid')
+                            ->where_id_is($uid)
+                            ->where('gid', $gid)
+                            ->find_one();
+                $relation->status = $status;
+                $relation->save();
+                return TRUE;
             }
-            return false;
+            return FALSE;
         }
 
         public static function removeFromGroup($id, $uid, $gid) {
@@ -301,7 +348,7 @@
                         ->left_outer_join(APP__DB_NAME . '.friends', 'users.id = friends.fid')
                         ->where('friends.uid', $id)
                         ->find_many();
-            return ORM2Array($res, ['id', 'uname']);
+            return (object)$res->as_array();
         }
 
         public static function addFriendship($uid, $fid) {
@@ -330,12 +377,21 @@
         public static function getChats($id) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table("chats")
-                   ->select('id, uid2')
+                   ->select('id', 'chat_id')
+                   ->select('uid2', 'receiver_id')
                    ->where('uid1', $id)
                    ->find_many();
-            return $res;
+            return (object)$res->as_array();
         }
         /**
         *   End of Chats
         */
+
+        /**
+        *   Users
+        */
+        public static function getUser($id, $show_favs = FALSE, $show_friends = FALSE, $show_groups = FALSE) {
+            $user = new User($id, $show_favs, $show_friends, $show_groups);
+            return $user->show();
+        }
     }
