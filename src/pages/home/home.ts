@@ -21,10 +21,11 @@ export class HomePage {
   cameraUrl: SafeUrl;
   photoSelected: boolean;
   swipe: number = 0;
-  items:any[];
+  isSearchbarOn: boolean =false;
   tab1Root = FildactualitePage;
   tab2Root = MessageriePage;
   private isOn: boolean = false;
+  items:string[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer, public events: Events) {
     this.photoTaken = false;
@@ -36,10 +37,6 @@ export class HomePage {
     });
 
   }
-  
-  focus(){
-    this.isOn=true;
-  }
 
   getItems(ev) {
     var val = ev.target.value;  //val : valeur inserée dans la searchbar
@@ -49,6 +46,19 @@ export class HomePage {
       this.items = [];
     }
   }
+
+  //when searchbar isn't focused
+  blur(){
+    this.isOn=false;
+  }
+  //when searchbar is focused
+  focus(){
+    this.isOn=true;
+  }
+  searchbar(){
+    this.isSearchbarOn=!this.isSearchbarOn;
+  }
+
 
   selectFromGallery() {
     let options : CameraOptions = {

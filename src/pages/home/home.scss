@@ -1,22 +1,2 @@
 page-home {
-    $max-height-allowed: 500px;
-    $max-width-allowed: 500px;
-
-    .footer {
-        background-color: rgba(0, 0, 0, 0);
-    }
-
-    .footer::before {
-        background: none;
-    }
-
-    #container {
-        background-color: rgba(0, 0, 0, 0);
-        position: fixed;
-        overflow: hidden;
-        border: none;
-        box-shadow: none;
-        height: 100%;
-        width: 100%;
-    }
 }

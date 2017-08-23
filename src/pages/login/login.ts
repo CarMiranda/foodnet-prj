@@ -22,6 +22,15 @@ export class LoginPage {
     console.log('ionViewDidLoad LoginPage');
   }
   login(){
+    //login avec identifiant et password (form?)
     this.navCtrl.push(HomePage);
+  }
+
+  loginfcb(){
+    //login avec compte fcb
+  }
+  loginLinkedin(){
+    //login avec compte Linkedin
+
   }
 }

@@ -25,4 +25,12 @@ export class SignupPage {
   signup(){
     this.navCtrl.push(HomePage);
   }
+
+  signUpFcb(){
+    //sign up with fcb account
+  }
+
+  signUpLinkedin(){
+    //sign up with Linkedin account
+  }
 }
