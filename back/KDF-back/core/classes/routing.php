@@ -304,7 +304,7 @@
                 $identifier = $decoded_jwt->id;
                 if ($method == "GET") {
                     // Get specified group information
-                    $result = Group::get($_REQUEST["group_id"]);
+                    $result = Group::get($_REQUEST["id"]);
                 } else {
                     $request_body = parseRequestBody();
                     if (!empty($request_body->action)) {

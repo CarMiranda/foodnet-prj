@@ -43,7 +43,7 @@
                     $this->groups = self::getGroups($this->orm->id);
                 }
             } catch (Exception $e) {
-                echo $e->getMessage();
+                throw $e;
             }
         }
 
@@ -87,6 +87,10 @@
         private function from_id($id = 0) {
             ORM::set_db(DB::factory('users'), 'users');
             $this->orm = ORM::for_table('users', 'users')->find_one($id);
+            if (!$this->orm) {
+                throw new Exception("Could not find user.");
+            }
+            
         }
 
         /**
@@ -97,6 +101,9 @@
         private function from_username($uname = "") {
             ORM::set_db(DB::factory('users'), 'users');
             $this->orm = ORM::for_table('users', 'users')->where('uname', $uname)->find_one();
+            if (!$this->orm) {
+                throw new Exception("Could not find user.");
+            }
         }
 
         /**
@@ -105,6 +112,9 @@
         private function from_email($mail = "") {
             ORM::set_db(DB::factory('users'), 'users');
             $this->orm = ORM::for_table('users', 'users')->where('mail', $mail)->find_one();
+            if (!$this->orm) {
+                throw new Exception("Could not find user.");
+            }
         }
 
         /**
@@ -130,7 +140,7 @@
 
         public static function login($request_body) {
             $user = new User($request_body->id);
-            if ($user || $user->checkPassword($request_body->password)) {
+            if ($user->checkPassword($request_body->password)) {
                 $var_fields = [
                     "iat" => time(),
                     "id" => $user->id,
@@ -292,8 +302,12 @@
                         ->select('groups.name', 'name')
                         ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.gid')
                         ->where('users_x_groups.uid', $id)
+                        ->where('visibility', 1)
                         ->find_many();
-            return (object)$groups->as_array();
+            foreach ($res as $row) {
+                $groups[] = (object)$row->as_array();
+            }
+            return $groups;
         }
 
         public static function addToGroup($id, $uid, $gid, $status = 0) {
@@ -348,7 +362,10 @@
                         ->left_outer_join(APP__DB_NAME . '.friends', 'users.id = friends.fid')
                         ->where('friends.uid', $id)
                         ->find_many();
-            return (object)$res->as_array();
+            foreach ($res as $row) {
+                $friends[] = (object)$row->as_array();
+            }
+            return $friends;
         }
 
         public static function addFriendship($uid, $fid) {

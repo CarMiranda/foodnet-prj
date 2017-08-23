@@ -6,18 +6,21 @@
 
         }
 
-        public static function getGroup($gid) {
+        public static function get($gid) {
             ORM::set_db(DB::factory('app'), 'app');
-            $res = ORM::for_table('groups')->find_one($gid);
-            return $res;
+            $res = ORM::for_table('groups', 'app')->find_one($gid);
+            if (!$res) {
+                throw new Exception("Group not found.");
+            }
+            return (object)$res->as_array();
         }
 
         public static function getUsers($gid) {
             ORM::set_db(DB::factory('users'), 'users');
-            $res = ORM::for_table('users')
-                        ->select_many(['`users`.`id`', '`users`.`uname`', '`' . APP__DB_NAME . '`.`users_x_groups`.`visibility`'])
-                        ->left_outer_join('`' . APP__DB_NAME . '`.`users_x_groups`', '`users_x_groups`.`uid` = `users`.`id`')
-                        ->where('`users_x_groups`.`gid`', $gid)
+            $res = ORM::for_table('users', 'users')
+                        ->select_many(['users.id', 'users.uname', APP__DB_NAME . '.users_x_groups.visibility'])
+                        ->left_outer_join(APP__DB_NAME . '.users_x_groups', 'users_x_groups.uid = users.id')
+                        ->where('users_x_groups.gid', $gid)
                         ->find_many();
             return $res;
         }
@@ -31,6 +34,9 @@
                 $group->{$key} = $value;
             }
             $group->save();
+
+            //add user to group
+            User::addToGroup($id, $group_info->id, 1);
             return TRUE;
         }
 
@@ -38,6 +44,9 @@
             ORM::set_db(DB::factory('app'), 'app');
             $group = ORM::for_table('groups', 'app')
                      ->find_one($group_info->id);
+            if (!$group) {
+                throw new Exception("Group not found.");
+            }
             $_ginfo = (array)$group_info;
             array_shift($_ginfo);
             foreach ($_ginfo as $key => $value) {
