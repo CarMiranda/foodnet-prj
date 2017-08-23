@@ -161,7 +161,6 @@
                                 if (empty($request_body)) {
                                     throw new Exception("No friendship information specified in request.");
                                 }
-
                                 if (!empty($request_body->action)) {
                                     $method = $request_body->action;
                                 }
@@ -190,9 +189,9 @@
                             if ($method == "GET") {
                                 // Get user information
                                 if (!empty($_REQUEST["id"])) {
-                                    $result = User::getUser($_REQUEST['id'], $_REQUEST['showFavorites'] == 1, $_REQUEST['showFriends'] == 1, $_REQUEST['showGroups'] == 1);
+                                    $result = User::get($_REQUEST['id'], $_REQUEST['showFavorites'] == 1, $_REQUEST['showFriends'] == 1, $_REQUEST['showGroups'] == 1);
                                 } else {
-                                    $result = User::getUser($identifier, $_REQUEST['showFavorites'] == 1, $_REQUEST['showFriends'] == 1, $_REQUEST['showGroups'] == 1);
+                                    $result = User::get($identifier, $_REQUEST['showFavorites'] == 1, $_REQUEST['showFriends'] == 1, $_REQUEST['showGroups'] == 1);
                                 }
                                 $error_msg = "Error fetching user.";
                             } else {
@@ -205,10 +204,10 @@
                                 }
                                 if ($method == "PUT") {
                                     // Change user information
-                                    $result = User::updateUser($identifier, $request_body);
+                                    $result = User::update($identifier, $request_body);
                                 } else if ($method == "DELETE") {
                                     // Delete user
-                                    $result = User::removeUser($identifier, $request_body->user_id);
+                                    $result = User::remove($identifier, $request_body->user_id);
                                 } else {
                                     throw new Exception("Unhandled user action.");
                                 }
@@ -227,7 +226,7 @@
                         if ($request_body->login) {
                             $result = User::login($request_body);
                         } else {
-                            $result = User::createUser($request_body);
+                            $result = User::create();
                         }
 
                         // Send data

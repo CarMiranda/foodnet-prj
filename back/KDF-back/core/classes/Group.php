@@ -22,7 +22,11 @@
                         ->left_outer_join(APP__DB_NAME . '.users_x_groups', 'users_x_groups.uid = users.id')
                         ->where('users_x_groups.gid', $gid)
                         ->find_many();
-            return $res;
+            $users = [];
+            foreach ($res as $row) {
+                $users[] = (object)$row->as_array();
+            }
+            return $users;
         }
 
         public static function create($id, $group_info) {
