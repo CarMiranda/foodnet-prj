@@ -26,6 +26,7 @@ import { SignupPage } from '../pages/signup/signup';
 import { ProfilePage } from '../pages/profile/profile';
 import { FildactualitePage } from '../pages/fildactualite/fildactualite';
 import { MessageriePage } from '../pages/messagerie/messagerie';
+import { CustomHeaderComponent } from '../components/custom-header/custom-header';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { MessageriePage } from '../pages/messagerie/messagerie';
     SignupPage,
     ProfilePage,
     FildactualitePage,
-    MessageriePage
+    MessageriePage,
+    CustomHeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +66,7 @@ import { MessageriePage } from '../pages/messagerie/messagerie';
     SignupPage,
     ProfilePage,
     FildactualitePage,
-    MessageriePage
+    MessageriePage,
   ],
   providers: [
     StatusBar,

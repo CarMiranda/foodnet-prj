@@ -1,21 +1,19 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the ProductDetailsPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-product-details',
   templateUrl: 'product-details.html',
 })
+
 export class ProductDetailsPage {
   product: any;
+  header_data:any;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.product = this.navParams.get('product');
+    this.header_data={isSearch:false,isCamera:true,isProfile:true,title:this.product.name.first};
   }
 
   showProduct() {

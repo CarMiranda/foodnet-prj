@@ -1,9 +1,6 @@
-  <ion-header no-border>
-    <ion-toolbar>
-    </ion-toolbar>
-  </ion-header>
+<ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
-  <ion-content>
+  <ion-content id="3">
       <ion-card style="position:relative;" *ngFor="let post of data">
         <ion-item>
           <ion-avatar item-start>
@@ -27,7 +24,7 @@
             </button>
           </ion-col>
           <ion-col>
-            <button ion-button icon-left clear small (click)="openCommentSection()">
+            <button ion-button icon-left clear small (click)="openCommentSection(post.cell)">
               <ion-icon name="text"></ion-icon>
               <div>4 Comments</div>
             </button>
@@ -38,7 +35,11 @@
             </ion-note>
           </ion-col>
         </ion-row>
-        <div id="commentSection"></div>
+
+        <div id='{{post.cell}}'>
+          <div innerHTML="item"></div>
+        </div>
+
       </ion-card>
 
       <ion-infinite-scroll (ionInfinite)="doInfinite($event)">

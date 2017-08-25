@@ -1,0 +1,29 @@
+<ion-navbar>
+
+  <ion-title *ngIf="isSearchbarOn==false">
+    {{header_data.title}}
+  </ion-title>
+
+  <ion-buttons end>
+    <button ion-button *ngIf="header_data.isSearch" icon-only (click)="searchbar()">
+      <ion-icon name="search"></ion-icon>
+    </button>
+    <button ion-button *ngIf="header_data.isCamera" icon-only (click)="openCamera()">
+      <ion-icon name="camera"></ion-icon>
+    </button>
+    <button ion-button *ngIf="header_data.isProfile" icon-only (click)="go('ProfilePage')">
+      <ion-icon name="contact"></ion-icon>
+    </button>
+  </ion-buttons>
+
+  <ion-searchbar *ngIf="isSearchbarOn" placeholder="Filter Items" (ionBlur)="blur()" (ionFocus)="focus()" (ionInput)="getItems($event)"></ion-searchbar>
+</ion-navbar>
+
+<div *ngIf="isOn">
+  <ion-list>
+    <ion-item button> Advanced research</ion-item>
+    <ion-item *ngFor="let item of items">
+      <p>{{ item }}</p>
+    </ion-item>
+  </ion-list>
+</div>

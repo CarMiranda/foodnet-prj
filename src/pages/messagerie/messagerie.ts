@@ -13,6 +13,7 @@ export class MessageriePage {
 
   data: any[];
   data2:any[];
+  header_data:any;
   constructor(public platform: Platform, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
     this.dbStorage.load(5).then((data : any) => {
       this.data = data.results;
@@ -25,7 +26,10 @@ export class MessageriePage {
     }, (err) => {
       console.log(err);
     });
+
+  this.header_data={isSearch:true,isCamera:true,isProfile:true,title:"KooDeFood"};
   }
+
   viewProduct(id: string) {
     let idx : number = this.data.findIndex((el) => {
       return el.cell == id;
