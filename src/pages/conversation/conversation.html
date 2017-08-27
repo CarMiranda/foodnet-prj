@@ -1,0 +1,30 @@
+<html hide-tabs>
+  <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
+    <ion-content padding >
+      <div *ngFor="let message of messages">
+         <div   *ngIf="message.user == 'user'" >
+            <div class="bubble me">message :
+              {{ message?.content }}
+            </div>
+          </div>
+        <div style="clear:both"></div>
+         <div *ngIf="message.user != 'user'">
+          <div class="bubble you">
+            {{ message?.content }}
+          </div>
+        </div>
+        <div style="clear:both"></div>
+      </div>
+    </ion-content>
+
+    <ion-footer id="form">
+      <form (ngSubmit)="submitMessage()">
+        <ion-item>
+          <ion-input  (ionBlur)="blur()" (ionFocus)="focus()" type="text" placeholder="Tapez un message" name="content" [(ngModel)]="newMessage.content">
+          </ion-input>
+          <button item-right ion-button clear type="submit">Envoyer</button>
+        </ion-item>
+      </form>
+    </ion-footer>
+
+</html>
