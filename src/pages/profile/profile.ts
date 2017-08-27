@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, App, NavParams } from 'ionic-angular';
+import { NavController, App, NavParams } from 'ionic-angular';
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
 import { Platform } from 'ionic-angular';
 

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Platform, IonicPage, NavController, NavParams } from 'ionic-angular';
-import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
 
@@ -20,7 +20,7 @@ export class FildactualitePage {
   header_data:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, public dbStorage: DbStorageProvider, private sanitizer: DomSanitizer) {
-    this.comments = ["efzrefz","trololo","kerjg"]
+    this.comments = ["efzrefz","trololo","kerjg"];
     this.dbStorage.load(3).then((data : any) => {
       this.data = data.results;
     }, (err) => {

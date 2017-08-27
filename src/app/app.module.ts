@@ -4,6 +4,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Camera } from '@ionic-native/camera';
+import { Keyboard } from '@ionic-native/keyboard';
 import { HttpModule } from '@angular/http';
 import { Geolocation } from '@ionic-native/geolocation';
 import {
@@ -26,7 +27,9 @@ import { SignupPage } from '../pages/signup/signup';
 import { ProfilePage } from '../pages/profile/profile';
 import { FildactualitePage } from '../pages/fildactualite/fildactualite';
 import { MessageriePage } from '../pages/messagerie/messagerie';
+import { ConversationPage } from '../pages/conversation/conversation';
 import { CustomHeaderComponent } from '../components/custom-header/custom-header';
+import { FakeCommentsProvider } from '../providers/fake-comments/fake-comments';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,8 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     ProfilePage,
     FildactualitePage,
     MessageriePage,
-    CustomHeaderComponent
+    CustomHeaderComponent,
+    ConversationPage
   ],
   imports: [
     BrowserModule,
@@ -67,6 +71,7 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     ProfilePage,
     FildactualitePage,
     MessageriePage,
+    ConversationPage
   ],
   providers: [
     StatusBar,
@@ -74,8 +79,10 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     Geolocation,
     GoogleMaps,
     Camera,
+    Keyboard,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DbStorageProvider
+    DbStorageProvider,
+    FakeCommentsProvider
   ]
 })
 export class AppModule {}
