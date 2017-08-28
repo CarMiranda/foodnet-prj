@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import {HomePage} from '../home/home';
+import { ApiProvider } from '../../providers/api/api';
+
 /**
  * Generated class for the SignupPage page.
  *
@@ -14,8 +16,8 @@ import {HomePage} from '../home/home';
   templateUrl: 'signup.html',
 })
 export class SignupPage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  // userData = { "username":"Uname1","password":"Uname1","id":"Uname1",}
+  constructor(public navCtrl: NavController, public navParams: NavParams, public apiprovider: ApiProvider) {
   }
 
   ionViewDidLoad() {
@@ -23,6 +25,9 @@ export class SignupPage {
   }
 
   signup(){
+    // Api Connection
+    //this.apiprovider.postData(this.userData)
+
     this.navCtrl.push(HomePage);
   }
 

@@ -1,9 +1,7 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title>Log in</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 <ion-content scroll="false" padding id="login">
@@ -11,12 +9,12 @@
 
     <ion-item>
       <ion-label fixed>Username</ion-label>
-      <ion-input type="text" value=""></ion-input>
+      <ion-input type="text" value="" [(ngModel)]="userData.id"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label fixed>Password</ion-label>
-      <ion-input type="password"></ion-input>
+      <ion-input type="password" [(ngModel)]="userData.password"></ion-input>
     </ion-item>
 
   </ion-list>

@@ -30,6 +30,7 @@ import { MessageriePage } from '../pages/messagerie/messagerie';
 import { ConversationPage } from '../pages/conversation/conversation';
 import { CustomHeaderComponent } from '../components/custom-header/custom-header';
 import { FakeCommentsProvider } from '../providers/fake-comments/fake-comments';
+import { ApiProvider } from '../providers/api/api';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import { FakeCommentsProvider } from '../providers/fake-comments/fake-comments';
     Keyboard,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     DbStorageProvider,
-    FakeCommentsProvider
+    FakeCommentsProvider,
+    ApiProvider
   ]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
-import { Component, ElementRef, Renderer, ViewChild } from '@angular/core';
-import { Events, Tabs } from 'ionic-angular';
+import { Component, ElementRef, Renderer } from '@angular/core';
+import { Events } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { FildactualitePage } from '../fildactualite/fildactualite';
 import { MessageriePage } from '../messagerie/messagerie';
@@ -14,8 +14,11 @@ export class HomePage {
   keyboardOpen:boolean=false;
   hideTabs :boolean = true;
 
+  userData : any;
   constructor(private keyboard :Keyboard, private elementRef: ElementRef, private renderer: Renderer, private event: Events) {
 
+    const data = JSON.parse(localStorage.getItem('userData'));
+    this.userData = data.userData;
   }
 
   ionViewDidEnter(){
