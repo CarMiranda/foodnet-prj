@@ -7,14 +7,16 @@ CREATE TABLE `users` (
     `status` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0, -- 0 INACTIVE, 1 ACTIVE, 2 BANNED
     `fname` VARCHAR(50) NOT NULL,
     `lname` VARCHAR(50) NOT NULL,
+    `country` VARCHAR(255),
     `address` VARCHAR(255),
-    `code_postal` INT(5) NOT NULL,
+    `postal_code` INT(5) NOT NULL,
+    `phone` VARCHAR(255),
     -- Store Longitude and Latitude for geolocation search
     `lon` DECIMAL(11,8) NOT NULL, -- Ranges from -180 to +180
     `lat` DECIMAL(10,8) NOT NULL, -- Ranges from -90 to +90
     `gender` TINYINT(1) UNSIGNED DEFAULT 0,
     `dob` DATE,
-    `avatar` VARCHAR(255) NOT NULL, -- Set trigger
+    `avatar` VARCHAR(255), -- Set trigger
     `lang` VARCHAR(2) DEFAULT 'fr',
     `last_seen` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Update when the user uses the app
     PRIMARY KEY (`id`)

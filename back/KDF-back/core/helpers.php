@@ -198,3 +198,19 @@
     function parseRequestBody() {
         return json_decode(file_get_contents("php://input"));
     }
+
+    function results($res_set) {
+        $res = [];
+        foreach ($res_array as $row) {
+            $res_array[] = (object)$row->as_array();
+        }
+        return $res_array;
+    }
+
+    function extractKey($result_set, $key) {
+        $res = [];
+        foreach ($result_set as $row) {
+            $res[] = $result_set->{$key};
+        }
+        return $res;
+    }

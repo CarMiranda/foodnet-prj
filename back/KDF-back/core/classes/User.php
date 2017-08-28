@@ -100,7 +100,7 @@
         */
         private function from_username($uname = "") {
             ORM::set_db(DB::factory('users'), 'users');
-            $this->orm = ORM::for_table('users', 'users')->where('uname', $uname)->find_one();
+            $this->orm = ORM::for_table('users', 'users')->where_raw('LOWER(`uname`) = ?', strtolower($uname))->find_one();
             if (!$this->orm) {
                 throw new Exception("Could not find user.");
             }
@@ -164,6 +164,19 @@
             $this->orm->save();
         }
 
+        public static function getByRegion($postal_code, $strict = FALSE) {
+            ORM::set_db(DB::config('users'), 'users');
+            $res = ORM::for_table('users', 'users');
+            if ($strict) {
+                $res->where('postal_code', $postal_code);
+            } else {
+                $_code = substr($postal_code, 0, 2);
+                $res->where_like('postal_code', '%' . $_code . '%');
+            }
+            $res->find_many();
+            return $res;
+        }
+
         /**
         *   Checks if a user exists.
         *
@@ -198,19 +211,15 @@
             $res = ORM::for_table('tags', 'app')
                         ->select('tags.id', 'id')
                         ->select('tags.name', 'name')
-                        ->left_outer_join('favorites', 'favorites.tid = tags.id')
-                        ->where('favorites.uid', $id)
+                        ->left_outer_join('favorites', 'favorites.tag_id = tags.id')
+                        ->where('favorites.user_id', $id)
                         ->find_many();
-            $favs = [];
-            foreach ($res as $row) {
-                $favs[] = (object)$row->as_array();
-            }
-            return $favs;
+            return $res;
         }
 
-        public static function addFavorites($uid, $tids) {
+        public static function addFavorites($user_id, $tids) {
             $db = DB::factory('app');
-            $stmt = $db->prepare('INSERT INTO favorites (uid, tid) VALUES (' . $uid . ', :tid);');
+            $stmt = $db->prepare('INSERT INTO favorites (user_id, tag_id) VALUES (' . $user_id . ', :tid);');
             if (is_array($tids)) {
                 foreach ($tids as $tag_id) {
                     try {
@@ -236,20 +245,20 @@
             }
         }
 
-        public static function updateFavorites($uid, $toAdd, $toDel) {
+        public static function updateFavorites($user_id, $toAdd, $toDel) {
             $res = TRUE;
             if (!empty($toAdd)) {
-                $res = $res && self::addFavorites($uid, $toAdd);
+                $res = $res && self::addFavorites($user_id, $toAdd);
             }
             if (!empty($toDel)) {
-                $res = $res && self::deleteFavorites($uid, $toDel);
+                $res = $res && self::deleteFavorites($user_id, $toDel);
             }
             return $res;
         }
 
-        public static function deleteFavorites($uid, $tids) {
+        public static function deleteFavorites($user_id, $tids) {
             $db = DB::factory('app');
-            $stmt = $db->prepare('DELETE FROM favorites WHERE (uid = ' . $uid . ' AND tid = :tid);');
+            $stmt = $db->prepare('DELETE FROM favorites WHERE (user_id = ' . $user_id . ' AND tag_id = :tid);');
             if (is_array($tids)) {
                 foreach ($tids as $tag_id) {
                     try {
@@ -288,64 +297,61 @@
             $res = ORM::for_table('groups', 'app')
                         ->select('groups.id', 'id')
                         ->select('groups.name', 'name')
-                        ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.gid')
-                        ->where('users_x_groups.uid', $id)
+                        ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.group_id')
+                        ->where('users_x_groups.user_id', $id)
                         ->where('visibility', 1)
                         ->find_many();
-            $groups = [];
-            foreach ($res as $row) {
-                $groups[] = (object)$row->as_array();
-            }
-            return $groups;
+            return $res;
         }
 
-        public static function addToGroup($id, $uid, $gid, $status = 0) {
-            if (Group::isAdmin($id, $gid)) {
+        public static function addToGroup($id, $user_id, $group_id, $status = 0) {
+            if (Group::isAdmin($id, $group_id)) {
                 ORM::set_db(DB::factory('app'), 'app');
                 $relation = ORM::for_table('users_x_groups', 'app')->create();
                 $relation->set([
-                    'uid' => $uid,
-                    'gid' => $gid,
+                    'user_id' => $user_id,
+                    'group_id' => $group_id,
                     'status' => $status
                 ]);
                 $relation->save();
-                return TRUE;
+                return $relation;
             }
             return FALSE;
         }
 
-        public static function updateOnGroup($id, $uid, $gid, $status) {
-            if (Group::isAdmin($id, $gid)) {
+        public static function updateOnGroup($id, $user_id, $group_id, $status) {
+            if (Group::isAdmin($id, $group_id)) {
                 ORM::set_db(DB::factory('app'), 'app');
                 $relation = ORM::for_table('users_x_groups', 'app')
-                            ->use_id_column('uid')
-                            ->where_id_is($uid)
-                            ->where('gid', $gid)
+                            ->use_id_column('user_id')
+                            ->where_id_is($user_id)
+                            ->where('group_id', $group_id)
                             ->find_one();
                 if (!$relation) {
                     throw new Exception("User does not belong in group.");
                 }
                 $relation->status = $status;
                 $relation->save();
-                return TRUE;
+                return $relation;
             }
             return FALSE;
         }
 
-        public static function removeFromGroup($id, $uid, $gid) {
-            if ($id == $uid || Group::isAdmin($id, $gid)) {
+        public static function removeFromGroup($id, $user_id, $group_id) {
+            if ($id == $user_id || Group::isAdmin($id, $group_id)) {
                 ORM::set_db(DB::factory('app'), 'app');
                 $relation = ORM::for_table('users_x_groups', 'app')
-                            ->use_id_column('uid')
-                            ->where_id_is($uid)
-                            ->where('gid', $gid)
+                            ->use_id_column('user_id')
+                            ->where_id_is($user_id)
+                            ->where('group_id', $group_id)
                             ->find_one();
                 if (!$relation) {
                     throw new Exception("User does not belong in group.");
                 }
                 $relation->delete();
+                return TRUE;
             }
-            return false;
+            return FALSE;
         }
 
         /**
@@ -360,27 +366,23 @@
             $res = ORM::for_table('users', 'users')
                         ->select_many(['users.id', 'users.uname'])
                         ->left_outer_join(APP__DB_NAME . '.friends', 'users.id = friends.fid')
-                        ->where('friends.uid', $id)
+                        ->where('friends.user_id', $id)
                         ->find_many();
-            $friends = [];
-            foreach ($res as $row) {
-                $friends[] = (object)$row->as_array();
-            }
-            return $friends;
+            return $res;
         }
 
-        public static function addFriendship($uid, $fid) {
+        public static function addFriendship($user_id, $friend_id) {
             ORM::set_db(DB::factory('app'), 'app');
             $relation1 = ORM::for_table('friends', 'app')->create();
             $relation1->set([
-                'uid' => $uid,
-                'fid' => $fid,
+                'user_id' => $user_id,
+                'fid' => $friend_id,
                 'status' => 1
             ]);
             $relation2 = ORM::for_table('friends', 'app')->create();
             $relation2->set([
-                'uid' => $fid,
-                'fid' => $uid,
+                'user_id' => $friend_id,
+                'fid' => $user_id,
                 'status' => 0
             ]);
             try {
@@ -389,20 +391,20 @@
             } catch (Exception $e) {
                 throw $e;
             }
-            return TRUE;
+            return [$relation1, $relation2];
         }
 
-        public static function updateFriendship($uid, $fid, $status) {
+        public static function updateFriendship($user_id, $friend_id, $status) {
             ORM::set_db(DB::factory('app'), 'app');
             $relation1 = ORM::for_table('friends', 'app')
-                        ->use_id_column('uid')
-                        ->where_id_is($uid)
-                        ->where('fid', $fid)
+                        ->use_id_column('user_id')
+                        ->where_id_is($user_id)
+                        ->where('fid', $friend_id)
                         ->find_one();
             $relation2 = ORM::for_table('friends', 'app')
-                        ->use_id_column('uid')
-                        ->where_id_is($fid)
-                        ->where('fid', $uid)
+                        ->use_id_column('user_id')
+                        ->where_id_is($friend_id)
+                        ->where('fid', $user_id)
                         ->find_one();
             if (!$relation1 || !$relation2) {
                 throw new Exception("No friendship found between specified users.");
@@ -415,26 +417,27 @@
             } catch (Exception $e) {
                 throw $e;
             }
-            return TRUE;
+            return [$relation1, $relation2];
         }
 
-        public static function deleteFriendship($uid, $fid) {
+        public static function deleteFriendship($user_id, $friend_id) {
             ORM::set_db(DB::factory('app'), 'app');
             $relation1 = ORM::for_table('friends', 'app')
-                        ->use_id_column('uid')
-                        ->where_id_is($uid)
-                        ->where('fid', $fid)
+                        ->use_id_column('user_id')
+                        ->where_id_is($user_id)
+                        ->where('fid', $friend_id)
                         ->find_one();
             $relation2 = ORM::for_table('friends', 'app')
-                        ->use_id_column('uid')
-                        ->where_id_is($fid)
-                        ->where('fid', $uid)
+                        ->use_id_column('user_id')
+                        ->where_id_is($friend_id)
+                        ->where('fid', $user_id)
                         ->find_one();
             if (!$relation1 || !$relation2) {
                 throw new Exception("No friendship found between specified users.");
             }
             $relation1->delete();
             $relation2->delete();
+            return TRUE;
         }
 
         /**
@@ -445,18 +448,16 @@
         *   Chats
         */
 
-        public static function getChats($id) {
+        public static function getChats($id, $limit = 20, $offset = 0) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table("chats")
                    ->select('id', 'chat_id')
-                   ->select('uid2', 'receiver_id')
-                   ->where('uid1', $id)
+                   ->select('user_id2', 'receiver_id')
+                   ->where('user_id1', $id)
+                   ->limit($limit)
+                   ->offset($offset)
                    ->find_many();
-            $chats = [];
-            foreach ($res as $row) {
-                $chats[] = (object)$row->as_array();
-            }
-            return $chats;
+            return $res;
         }
         /**
         *   End of Chats
@@ -495,8 +496,8 @@
             return FALSE;
         }
 
-        public static function remove($identifier, $uid) {
-            if (!empty($uid) && $identifier == $uid) {
+        public static function remove($identifier, $user_id) {
+            if (!empty($user_id) && $identifier == $user_id) {
                 $user = new User($identifier);
                 if (!$user) {
                     throw new Exception("User not found.");

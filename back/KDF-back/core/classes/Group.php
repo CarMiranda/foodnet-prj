@@ -1,32 +1,32 @@
 <?php
 
     class Group {
-        
-        public function __construct() {
 
-        }
-
-        public static function get($gid) {
-            ORM::set_db(DB::factory('app'), 'app');
-            $res = ORM::for_table('groups', 'app')->find_one($gid);
-            if (!$res) {
-                throw new Exception("Group not found.");
-            }
-            return (object)$res->as_array();
-        }
-
-        public static function getUsers($gid) {
+        public static function getUsers($group_id) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table('users', 'users')
                         ->select_many(['users.id', 'users.uname', APP__DB_NAME . '.users_x_groups.visibility'])
                         ->left_outer_join(APP__DB_NAME . '.users_x_groups', 'users_x_groups.uid = users.id')
-                        ->where('users_x_groups.gid', $gid)
+                        ->where('users_x_groups.gid', $group_id)
                         ->find_many();
-            $users = [];
-            foreach ($res as $row) {
-                $users[] = (object)$row->as_array();
+            return $res;
+        }
+
+        public static function getChat($group_id) {
+            ORM::set_db(DB::factory('app'), 'app');
+            $res = ORM::for_table('group_chats', 'app')
+                        ->where_id_is('group_id')
+                        ->find_one($group_id);
+            return $res;
+        }
+
+        public static function get($group_id) {
+            ORM::set_db(DB::factory('app'), 'app');
+            $res = ORM::for_table('groups', 'app')->find_one($group_id);
+            if (!$res) {
+                throw new Exception("Group not found.");
             }
-            return $users;
+            return $res;
         }
 
         public static function create($id, $group_info) {
@@ -35,13 +35,15 @@
             if (isset($group_info->id)) unset($group_info->id);
             $_ginfo = (array)$group_info;
             foreach ($_ginfo as $key => $value) {
-                $group->{$key} = $value;
+                if (property_exists($group, $key)) {
+                    $group->{$key} = $value;
+                }
             }
             $group->save();
 
             //add user to group
             User::addToGroup($id, $group_info->id, 1);
-            return TRUE;
+            return $group;
         }
 
         public static function update($uid, $group_info) {
@@ -54,19 +56,40 @@
             $_ginfo = (array)$group_info;
             array_shift($_ginfo);
             foreach ($_ginfo as $key => $value) {
-                $group->{$key} = $value;
+                if (property_exists($group, $key)) {
+                    $group->{$key} = $value;
+                }
             }
             $group->save();
-            return TRUE;
+            return $group;
+        }
+        
+        public static function remove($user_id, $group_id) {
+            if (!empty($group_id)) {
+                ORM::set_db(DB::factory('app'), 'app');
+                $res = ORM::for_table('groups', 'app')->find_one($group_id);
+                if ($res && Group::isAdmin($user_id, $group_id)) {
+                    $res->delete();
+                    return TRUE;
+                } else if (!$res) {
+                    throw new Exception('Group does not exist.');
+                } else {
+                    throw new Exception('Not an admin.');
+                }
+            }
+            return FALSE;
         }
 
-        public static function isAdmin($id, $gid) {
+        /**
+        * 
+        */
+        public static function isAdmin($user_id, $group_id) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('users_x_groups', 'app')
                         ->select('status')
-                        ->where('uid', $id)
-                        ->where('gid', $gid)
-                        ->find_one();
+                        ->where('group_id', $group_id)
+                        ->where_id_is('user_id')
+                        ->find_one($user_id);
             return $res == 1;
         }
     }

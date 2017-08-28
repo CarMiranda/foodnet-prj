@@ -1,16 +1,16 @@
 CREATE TABLE `posts` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `owner` INT(11) UNSIGNED NOT NULL,
+    `owner_id` INT(11) UNSIGNED NOT NULL,
     `name` VARCHAR(50) NOT NULL,
     `description` TINYTEXT,
-    `createdat` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `expdate` DATE NOT NULL,
-    `autoremovedate` DATE NOT NULL, -- Set trigger
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `exp_date` DATE NOT NULL,
+    `autoremove_date` DATE NOT NULL, -- Set trigger
     `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-    `image` VARCHAR(255) NOT NULL, -- Set trigger to check Pattern: CONCAT(`Owner`, "_", NOW(), ".jpg")
-    `inactivesince` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `image` VARCHAR(255), -- Set trigger to check Pattern: CONCAT(`Owner`, "_", NOW(), ".jpg")
+    `inactive_since` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_p_user` FOREIGN KEY (`owner`) REFERENCES `users`(`id`)
+    CONSTRAINT `fk_p_user` FOREIGN KEY (`owner_id`) REFERENCES `users`(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 -- Setting trigger for AutoRemoveDate if no date was specified

@@ -204,7 +204,7 @@
                                 }
                                 if ($method == "PUT") {
                                     // Change user information
-                                    $result = User::update($identifier, $request_body);
+                                    $result = User::update($identifier, $request_body->user_info);
                                 } else if ($method == "DELETE") {
                                     // Delete user
                                     $result = User::remove($identifier, $request_body->user_id);
@@ -234,6 +234,11 @@
                             $response->success($result);
                         } else {
                             throw new Exception($error_msg);
+                        }
+                    } else if ($method == "PUT") {
+                        $request_body = parseRequestBody();
+                        if ($request_body->reinit) {
+                            $result = User::passwordReinit($request_body->id);
                         }
                     } else {
                         throw new Exception("Bad users request.");
@@ -274,7 +279,7 @@
                             $result = Post::getByTags($_REQUEST["tags"], $_REQUEST["limit"]);
                         break;
                         default :
-                            $result = Post::getSome($_REQUEST["limit"]);
+                            $result = Post::get($_REQUEST["limit"]);
                     }
                 } else {
                     $request_body = parseRequestBody();
