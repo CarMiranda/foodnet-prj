@@ -230,7 +230,7 @@
     function extractKey($result_set, $key) {
         $res = [];
         foreach ($result_set as $row) {
-            $res[] = $result_set->{$key};
+            $res[] = $row->{$key};
         }
         return $res;
     }

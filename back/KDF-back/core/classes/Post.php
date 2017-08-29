@@ -5,66 +5,76 @@
         public static function getByUser($id, $limit = 50, $offset = 0) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('posts', 'app')
-                   ->where('owner', $id)
+                   ->where('owner_id', $id)
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
 
-        public static function getByGroup($id, $limit = 50, $offset = 0) {
+        public static function getByGroup($id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = Group::getUsers($id);
             $ids = extractKey($res, "id");
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
-                   ->where_in('owner', $ids)
+                   ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
             
         }
 
-        public static function getByFriends($user_id, $limit = 50, $offset = 0) {
+        public static function getByFriends($user_id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = User::getFriendships($id);
             $ids = extractKey($res, "id");
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
                    ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
 
-        public static function getByRegion($code_postal, $limit = 50, $offset = 0) {
+        public static function getByRegion($code_postal, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = User::getByRegion($code_postal);
             $ids = extractKey($res, "id");
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
                    ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
 
-        public static function getByRadius($lon, $lat, $radius, $limit = 50, $offset = 0) {
+        public static function getByRadius($lon, $lat, $radius, $limit = NULL, $offset = NULL) {
             ORM::set_dn(DB::factory('app'), 'app');
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             return ORM::raw_execute('CALL geodist(' . $lon . ', ' . $lat . ', ' . $radius . ', ' . $limit . ', ' . $offset . ');');
         }
 
-        public static function getByTags($tags_id, $limit = 50, $offset = 0) {
+        public static function getByTags($tags_id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
                    ->left_outer_join(APP__DB_NAME . '.posts_x_tags', 'posts_x_tags.tag_id IN = posts.id')
                    ->where_in('posts_x_tags', $tags_id)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
@@ -78,12 +88,14 @@
             return $res;
         }
 
-        public static function getComments($post_id, $limit = 10, $offset = 0) {
+        public static function getComments($post_id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
+            if (empty($limit)) $limit = 10;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('comments', 'app')
                    ->where('post_id', $post_id)
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
@@ -111,12 +123,10 @@
             return TRUE;
         }
 
-        public static function getLikes($post_id, $limit = 10, $offset = 0) {
+        public static function getLikes($post_id) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('likes', 'app')
                    ->where('post_id', $post_id)
-                   ->limit($limit)
-                   ->offset($offset)
                    ->find_many();
             return $res;
         }
@@ -143,12 +153,14 @@
             return $res;
         }
 
-        public static function get($limit = 50, $offset = 0) {
+        public static function get($limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset)
+                   ->offset($offset*$limit)
                    ->find_many();
             return $res;
         }
@@ -171,7 +183,7 @@
             if (!$post) {
                 throw new Exception('Post not found.');
             }
-            if ($post->owner == $user_id) {
+            if ($post->owner_id == $user_id) {
                 throw new Exception('User is not original poster.');
             }
             $_pinfo = (array)$post_info;
@@ -186,7 +198,7 @@
             if (!empty($user_id) && !empty($post_id)) {
                 ORM::set_db(DB::factory('app'), 'app');
                 $res = ORM::for_table('posts', 'app')->find_one($post_id);
-                if ($res && $res->owner == $user_id) {
+                if ($res && $res->owner_id == $user_id) {
                     $res->delete();
                     return TRUE;
                 } else if (!$res) {

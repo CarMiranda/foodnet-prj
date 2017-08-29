@@ -448,8 +448,8 @@
         */
 
         public static function getChats($id, $limit = 20, $offset = 0) {
-            ORM::set_db(DB::factory('users'), 'users');
-            $res = ORM::for_table("chats")
+            ORM::set_db(DB::factory('app'), 'app');
+            $res = ORM::for_table('chats', 'app')
                    ->select('id', 'chat_id')
                    ->select('user_id2', 'receiver_id')
                    ->where('user_id1', $id)

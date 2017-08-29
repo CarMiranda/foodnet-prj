@@ -254,32 +254,32 @@
                     switch ($ressource[1]) {
                         case "users" :
                             if (!empty($_REQUEST["id"])) {
-                                $result = Post::getByUser($_REQUEST["id"], $_REQUEST["limit"]);
+                                $result = Post::getByUser($_REQUEST["id"], ($_REQUEST["limit"] ? $_REQUEST["limit"] : NULL), $_REQUEST["offset"]);
                             } else {
-                                $result = Post::getByUser($identifier, $_REQUEST["limit"]);
+                                $result = Post::getByUser($identifier, ($_REQUEST["limit"] ? $_REQUEST["limit"] : NULL), $_REQUEST["offset"]);
                             }
                             $error_msg = "Error fetching user.";
                         break;
                         case "groups" :
-                            $result = Post::getByGroup($_REQUEST["group_id"], $_REQUEST["limit"]);
+                            $result = Post::getByGroup($_REQUEST["group_id"], ($_REQUEST["limit"] ? $_REQUEST["limit"] : NULL), $_REQUEST["offset"]);
                         break;
                         case "friends" :
-                            $result = Post::getByFriends($identifier, $_REQUEST["limit"]);
+                            $result = Post::getByFriends($identifier, ($_REQUEST["limit"] ? $_REQUEST["limit"] : NULL), $_REQUEST["offset"]);
                         break;
                         case "location" :
                             if ($_REQUEST["type"] == "region") {
-                                $result = Post::getByRegion($_REQUEST["region"], $_REQUEST["limit"]);
+                                $result = Post::getByRegion($_REQUEST["region"], ($_REQUEST["limit"] ? $_REQUEST["limit"] : NULL), $_REQUEST["offset"]);
                             } else if ($_REQUEST["type"] == "radius") {
-                                $result = Post::getByRadius($_REQUEST["lat"], $_REQUEST["lon"], $_REQUEST["radius"], $_REQUEST["limit"]);
+                                $result = Post::getByRadius($_REQUEST["lat"], $_REQUEST["lon"], $_REQUEST["radius"], $_REQUEST["limit"], $_REQUEST["offset"]);
                             } else {
                                 throw new Exception("Bad request.");
                             }
                         break;
                         case "tags" :
-                            $result = Post::getByTags($_REQUEST["tags"], $_REQUEST["limit"]);
+                            $result = Post::getByTags($_REQUEST["tags"], $_REQUEST["limit"], $_REQUEST["offset"]);
                         break;
                         default :
-                            $result = Post::get($_REQUEST["limit"]);
+                            $result = Post::get($_REQUEST["limit"], $_REQUEST["offset"]);
                     }
                 } else {
                     $request_body = parseRequestBody();
@@ -345,7 +345,7 @@
                             $result = Chat::getReplyByUserId($identifier, $_REQUEST["receiver_id"]);
                         }
                     } else {
-                        $result = Chat::getSome($_REQUEST["limit"]);
+                        $result = Chat::getSome($_REQUEST["limit"], $_REQUEST["offset"]);
                     }
                 } else {
                     $request_body = parseRequestBody();

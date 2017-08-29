@@ -5,9 +5,11 @@
         public static function getUsers($group_id) {
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table('users', 'users')
-                        ->select_many(['users.id', 'users.uname', APP__DB_NAME . '.users_x_groups.visibility'])
-                        ->left_outer_join(APP__DB_NAME . '.users_x_groups', 'users_x_groups.uid = users.id')
-                        ->where('users_x_groups.gid', $group_id)
+                        ->select('users.id', 'id')
+                        ->select('users.uname', 'name')
+                        ->left_outer_join(APP__DB_NAME . '.users_x_groups', 'users_x_groups.user_id = users.id')
+                        ->where('users_x_groups.group_id', $group_id)
+                        ->where_not_equal('status', 2)
                         ->find_many();
             return $res;
         }
