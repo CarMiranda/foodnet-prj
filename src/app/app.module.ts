@@ -7,9 +7,6 @@ import { Camera } from '@ionic-native/camera';
 import { Keyboard } from '@ionic-native/keyboard';
 import { HttpModule } from '@angular/http';
 import { Geolocation } from '@ionic-native/geolocation';
-import {
-  GoogleMaps
- } from '@ionic-native/google-maps';
 
 
 import { MyApp } from './app.component';
@@ -20,7 +17,6 @@ import { LinefeedPage } from '../pages/linefeed/linefeed';
 import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { DbStorageProvider } from '../providers/db-storage/db-storage';
 import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca';
-import { TestgglemapsPage } from '../pages/testgglemaps/testgglemaps';
 import { WelcomePage } from '../pages/welcome/welcome';
 import { LoginPage } from '../pages/login/login';
 import { SignupPage } from '../pages/signup/signup';
@@ -41,7 +37,6 @@ import { ApiProvider } from '../providers/api/api';
     LinefeedPage,
     ProductDetailsPage,
     TestGeolocaPage,
-    TestgglemapsPage,
     WelcomePage,
     LoginPage,
     SignupPage,
@@ -65,7 +60,6 @@ import { ApiProvider } from '../providers/api/api';
     LinefeedPage,
     ProductDetailsPage,
     TestGeolocaPage,
-    TestgglemapsPage,
     WelcomePage,
     LoginPage,
     SignupPage,
@@ -78,7 +72,6 @@ import { ApiProvider } from '../providers/api/api';
     StatusBar,
     SplashScreen,
     Geolocation,
-    GoogleMaps,
     Camera,
     Keyboard,
     {provide: ErrorHandler, useClass: IonicErrorHandler},

@@ -1,7 +1,43 @@
 <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
-<ion-content padding>
+<ion-content>
   <ion-card>
-    {{showProduct()}}
+    <ion-item>
+      <ion-avatar item-start>
+        <img src="{{product.picture.thumbnail}}">
+      </ion-avatar>
+      <h2>{{product.name.first + ' ' + product.name.last}}</h2>
+      <p>{{product.dob}}</p>
+    </ion-item>
+    <ion-card-header>
+      Description :
+    </ion-card-header>
+    <ion-card-content>
+      {{description}}
+    </ion-card-content>
   </ion-card>
+  <img src="assets/imgs/example_nourriture.jpg">
+
+  <ion-list id="infoList" style="margin-bottom:60px">
+  <ion-list-header>
+    Infos Générales:
+  </ion-list-header>
+  <ion-item>Date de péremption :
+    <ion-note item-end>
+    {{product.registered}}
+    </ion-note>
+  </ion-item>
+  <ion-item>Région
+    <ion-note item-end>
+    {{product.location.city}}
+    </ion-note>
+  </ion-item>
+</ion-list>
+
+
+  <ion-fab left bottom>
+    <button ion-fab (click)="goMessagerie();" color="dark">
+      <ion-icon name="chatbubbles"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

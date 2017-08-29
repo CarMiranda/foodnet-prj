@@ -1,8 +1,4 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>{{data}}</ion-title>
-  </ion-navbar>
-</ion-header>
+<ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
 <ion-content padding>
   <ion-item>
@@ -11,48 +7,51 @@
     </ion-avatar>
     <h2 item-end>{{userDetails?.name.first}}</h2>
   </ion-item>
-    <ion-list no-lines no-border>
-      <ion-list-header>
-        Infos
-      </ion-list-header>
-      <ion-item>
-        N. Tel.
+  <ion-list no-lines no-border>
+    <ion-list-header>
+      Infos
+    </ion-list-header>
+    <ion-item>
+      N. Tel.
       <ion-note item-end>
         {{userDetails?.cell}}
       </ion-note>
-      </ion-item>
+    </ion-item>
       <ion-item>
         Prénom
       <ion-note item-end>
         {{userDetails?.name.first}}
-      </ion-note>
-      </ion-item>
-      <ion-item>
-        Nom
+    </ion-note>
+    </ion-item>
+    <ion-item>
+      Nom
       <ion-note item-end>
         {{userDetails?.name.last}}
       </ion-note>
-      </ion-item>
-    </ion-list>
+    </ion-item>
+  </ion-list>
 
 
   <ion-list style="position: absolute; bottom: 0; width:100%">
-  <button ion-item>
-    <ion-icon name="key" item-start></ion-icon>
-      Mon Compte
-  </button >
-  <button ion-item>
-    <ion-icon name="contacts" item-start></ion-icon>
-      Mes Contacts
-  </button>
-  <button ion-item (click)="logout()">
-    <ion-icon name="exit" item-start></ion-icon>
-      Log out
-  </button >
-  <button ion-item>
-    <ion-icon name="help" item-start></ion-icon>
-      Aide
-  </button>
-
+    <button ion-item>
+      <ion-icon name="key" item-start></ion-icon>
+        Mon Compte
+    </button >
+    <button ion-item>
+      <ion-icon name="contacts" item-start></ion-icon>
+        Mes Contacts
+    </button>
+    <button ion-item>
+      <ion-icon name="pizza" item-start></ion-icon>
+        Mes Posts
+    </button >
+    <button ion-item (click)="logout()">
+      <ion-icon name="exit" item-start></ion-icon>
+        Log out
+    </button >
+    <button ion-item>
+      <ion-icon name="help" item-start></ion-icon>
+        Aide
+    </button>
   </ion-list>
 </ion-content>

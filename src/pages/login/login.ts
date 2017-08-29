@@ -1,23 +1,25 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 
 import {HomePage} from '../home/home';
 import { ApiProvider } from '../../providers/api/api';
-/**
- * Generated class for the LoginPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
 })
 export class LoginPage {
-  userData = { "action":"PUT","login":true,"id":"Uname1","password":"Uname1"};
+  userData = {"action":"PUT","login":true,"id":"Uname1","password":"Uname1"};
   responseData: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams, public apiprovider:ApiProvider) {
+  loginFailedMessage : "Identifiant ou mot de passe incorrect."
+  toast:any;
+  constructor(public navCtrl: NavController,public toastCtrl:ToastController, public navParams: NavParams, public apiprovider:ApiProvider) {
+    this.toast = this.toastCtrl.create({
+     message: this.loginFailedMessage,
+     duration: 3000
+   });
+
   }
 
   ionViewDidLoad() {
@@ -34,12 +36,13 @@ export class LoginPage {
     }, (err)=>{
       //Connection failed
       console.log("connection failed");
+      this.toast.present();
     });
     //this.navCtrl.push(HomePage);
   }
 
   loginfcb(){
-    //login avec compte fcb
+    this.navCtrl.push(HomePage);
   }
   loginLinkedin(){
     //login avec compte Linkedin

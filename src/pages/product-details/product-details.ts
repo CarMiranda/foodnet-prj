@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
+import { MessageriePage } from '../messagerie/messagerie';
 
 @IonicPage()
 @Component({
@@ -9,15 +10,19 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 
 export class ProductDetailsPage {
-  product: any;
+  product:any;
   header_data:any;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.product = this.navParams.get('product');
-    this.header_data={isSearch:false,isCamera:true,isProfile:true,title:this.product.name.first};
+  description:any;
+  constructor(public navCtrl: NavController, public navParams:NavParams) {
+    this.product = navParams.get('product');
+    this.description=JSON.stringify(this.product.picture);
+    // header personnalisé
+    this.header_data={isSearch:false,isCamera:true,isProfile:true,title:this.product.name.first+"\'s product"};
+
   }
 
-  showProduct() {
-    return this.product.location.street + ' ' + this.product.location.city + ' ' + this.product.location.state;
+  goMessagerie(){
+    this.navCtrl.push(MessageriePage);
   }
 
 }

@@ -9,12 +9,12 @@ import { SignupPage } from '../signup/signup';
   templateUrl: 'welcome.html',
 })
 export class WelcomePage {
-
+  splash = true;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad WelcomePage');
+    setTimeout(() => this.splash = false, 4000);
   }
 
   login(){

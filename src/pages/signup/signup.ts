@@ -4,18 +4,23 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {HomePage} from '../home/home';
 import { ApiProvider } from '../../providers/api/api';
 
-/**
- * Generated class for the SignupPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 @IonicPage()
 @Component({
   selector: 'page-signup',
   templateUrl: 'signup.html',
 })
 export class SignupPage {
+
+  //data to signup
+  userData = {
+    "action":"PUT",
+    "login":false,
+    "id":"",
+    "username":"",
+    "password":"",
+    "email":""
+  };
+
   // userData = { "username":"Uname1","password":"Uname1","id":"Uname1",}
   constructor(public navCtrl: NavController, public navParams: NavParams, public apiprovider: ApiProvider) {
   }

@@ -18,7 +18,7 @@ export class HomePage {
   constructor(private keyboard :Keyboard, private elementRef: ElementRef, private renderer: Renderer, private event: Events) {
 
     const data = JSON.parse(localStorage.getItem('userData'));
-    this.userData = data.userData;
+    this.userData = data;
   }
 
   ionViewDidEnter(){

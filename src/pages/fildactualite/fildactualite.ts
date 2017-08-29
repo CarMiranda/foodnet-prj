@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { Platform, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Platform, IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
 
+import { ProductDetailsPage } from '../product-details/product-details';
 
 @IonicPage()
 @Component({
@@ -19,13 +20,14 @@ export class FildactualitePage {
   comments:string[];
   header_data:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, public dbStorage: DbStorageProvider, private sanitizer: DomSanitizer) {
+  constructor(public app: App, public navCtrl: NavController, public navParams: NavParams, private platform: Platform, public dbStorage: DbStorageProvider, private sanitizer: DomSanitizer) {
     this.comments = ["efzrefz","trololo","kerjg"];
     this.dbStorage.load(3).then((data : any) => {
       this.data = data.results;
     }, (err) => {
       console.log(err);
     });
+    // header personnalisé
     this.header_data={isSearch:true,isCamera:true,isProfile:true,title:"KooDeFood"};
   }
 
@@ -42,8 +44,6 @@ export class FildactualitePage {
     }
   }
 
-
-
   doInfinite(infiniteScroll) {
     console.log('Begin async operation');
     setTimeout(() => {
@@ -57,6 +57,12 @@ export class FildactualitePage {
       });
       infiniteScroll.complete();
     }, 50);
+  }
+
+  showProduct(product){
+    this.app.getRootNav().push(ProductDetailsPage, {
+      'product': product
+    });
   }
 
 }

@@ -5,7 +5,6 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser
 
 import { ProfilePage } from '../../pages/profile/profile';
 import { ConfirmationPage } from '../../pages/confirmation/confirmation';
-import { TestgglemapsPage } from '../../pages/testgglemaps/testgglemaps';
 import { LinefeedPage } from '../../pages/linefeed/linefeed';
 /**
  * Generated class for the CustomHeaderComponent component.
@@ -92,9 +91,6 @@ export class CustomHeaderComponent {
       console.log("Swiped! Going to " + toPage);
       if (toPage === 'Linefeed') {
         this.navCtrl.push(LinefeedPage);
-      }
-      if (toPage === 'TestGeoloca') {
-        this.navCtrl.push(TestgglemapsPage);
       }
       if (toPage === 'ProfilePage') {
         this.navCtrl.push(ProfilePage);

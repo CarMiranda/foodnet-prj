@@ -9,6 +9,7 @@ import { Platform } from 'ionic-angular';
 })
 export class ProfilePage {
   public userDetails: any;
+  header_data:any;
   public data:any;
   constructor(public app: App, public platform: Platform, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
     this.dbStorage.load(1).then((data : any) => {
@@ -17,6 +18,8 @@ export class ProfilePage {
       console.log(err);
     });
     this.data =JSON.parse(localStorage.getItem('authorizationToken'));
+    // header personnalisé
+    this.header_data={isSearch:false,isCamera:true,isProfile:false,title:this.data};
   }
 
   backToWelcome(){

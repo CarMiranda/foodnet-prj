@@ -1,7 +1,8 @@
 <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
-  <ion-content id="3">
-      <ion-card style="position:relative;" *ngFor="let post of data">
+  <ion-content >
+      <ion-card style="position:relative;" *ngFor="let post of data" >
+
         <ion-item>
           <ion-avatar item-start>
             <img src="{{post.picture.thumbnail}}">
@@ -9,20 +10,22 @@
           <h2>{{post.name.first + ' ' + post.name.last}}</h2>
           <p>{{post.dob}}</p>
         </ion-item>
-
-        <img src="assets/imgs/example_nourriture.jpg">
+        <ion-card-header (click)="showProduct(post)">
+          POST TITLE
+        </ion-card-header>
+        <img (click)="showProduct(post)" src="assets/imgs/example_nourriture.jpg">
 
         <ion-card-content>
           <p>{{post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city}}</p>
         </ion-card-content>
 
         <ion-row>
-          <ion-col>
+          <!-- <ion-col>
             <button ion-button icon-left clear small>
               <ion-icon name="thumbs-up"></ion-icon>
               <div>12 Likes</div>
             </button>
-          </ion-col>
+          </ion-col> -->
           <ion-col>
             <button ion-button icon-left clear small (click)="openCommentSection(post.cell)">
               <ion-icon name="text"></ion-icon>

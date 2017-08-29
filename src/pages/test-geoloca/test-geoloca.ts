@@ -3,9 +3,6 @@ import { IonicPage, NavController} from 'ionic-angular';
 
 import { Geolocation } from '@ionic-native/geolocation';
 
-
-import { TestgglemapsPage } from '../testgglemaps/testgglemaps'
-
 @IonicPage()
 @Component({
   selector: 'page-test-geoloca',
@@ -36,10 +33,6 @@ export class TestGeolocaPage {
 
   go(toPage: string) {
     console.log("Swiped! Going to " + toPage);
-    if (toPage === 'Testgglemaps') {
-      this.navCtrl.push(TestgglemapsPage);
-
-    }
 
   }
 }
