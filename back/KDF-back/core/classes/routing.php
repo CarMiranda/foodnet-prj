@@ -252,7 +252,7 @@
                 $identifier = $decoded_jwt[1]->id;
                 if ($method == "GET") {
                     switch ($ressource[1]) {
-                        case "user" :
+                        case "users" :
                             if (!empty($_REQUEST["id"])) {
                                 $result = Post::getByUser($_REQUEST["id"], $_REQUEST["limit"]);
                             } else {
@@ -260,7 +260,7 @@
                             }
                             $error_msg = "Error fetching user.";
                         break;
-                        case "group" :
+                        case "groups" :
                             $result = Post::getByGroup($_REQUEST["group_id"], $_REQUEST["limit"]);
                         break;
                         case "friends" :

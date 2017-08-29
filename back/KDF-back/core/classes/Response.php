@@ -9,15 +9,7 @@
 
         public function success($data) {
             $this->status = "success";
-            if (is_array($data)) {
-                $_data = [];
-                foreach ($data as $row) {
-                    $_data[] = (object)$row->as_array();
-                }
-            } else {
-                $_data = $data;
-            }
-            $this->data = $_data;
+            $this->data = results($data);
         }
 
         public function exception($exception) {

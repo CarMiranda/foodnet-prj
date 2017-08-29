@@ -209,8 +209,7 @@
         public static function getFavorites($id) {
             ORM::set_db(DB::factory('app'), 'app');
             $res = ORM::for_table('tags', 'app')
-                        ->select('tags.id', 'id')
-                        ->select('tags.name', 'name')
+                        ->select('tags.*')
                         ->left_outer_join('favorites', 'favorites.tag_id = tags.id')
                         ->where('favorites.user_id', $id)
                         ->find_many();
@@ -299,7 +298,7 @@
                         ->select('groups.name', 'name')
                         ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.group_id')
                         ->where('users_x_groups.user_id', $id)
-                        ->where('visibility', 1)
+                        ->where('groups.visibility', 1)
                         ->find_many();
             return $res;
         }
@@ -365,7 +364,7 @@
             ORM::set_db(DB::factory('users'), 'users');
             $res = ORM::for_table('users', 'users')
                         ->select_many(['users.id', 'users.uname'])
-                        ->left_outer_join(APP__DB_NAME . '.friends', 'users.id = friends.fid')
+                        ->left_outer_join(APP__DB_NAME . '.friends', 'users.id = friends.friend_id')
                         ->where('friends.user_id', $id)
                         ->find_many();
             return $res;
@@ -376,13 +375,13 @@
             $relation1 = ORM::for_table('friends', 'app')->create();
             $relation1->set([
                 'user_id' => $user_id,
-                'fid' => $friend_id,
+                'friend_id' => $friend_id,
                 'status' => 1
             ]);
             $relation2 = ORM::for_table('friends', 'app')->create();
             $relation2->set([
                 'user_id' => $friend_id,
-                'fid' => $user_id,
+                'friend_id' => $user_id,
                 'status' => 0
             ]);
             try {
@@ -399,12 +398,12 @@
             $relation1 = ORM::for_table('friends', 'app')
                         ->use_id_column('user_id')
                         ->where_id_is($user_id)
-                        ->where('fid', $friend_id)
+                        ->where('friend_id', $friend_id)
                         ->find_one();
             $relation2 = ORM::for_table('friends', 'app')
                         ->use_id_column('user_id')
                         ->where_id_is($friend_id)
-                        ->where('fid', $user_id)
+                        ->where('friend_id', $user_id)
                         ->find_one();
             if (!$relation1 || !$relation2) {
                 throw new Exception("No friendship found between specified users.");
@@ -425,12 +424,12 @@
             $relation1 = ORM::for_table('friends', 'app')
                         ->use_id_column('user_id')
                         ->where_id_is($user_id)
-                        ->where('fid', $friend_id)
+                        ->where('friend_id', $friend_id)
                         ->find_one();
             $relation2 = ORM::for_table('friends', 'app')
                         ->use_id_column('user_id')
                         ->where_id_is($friend_id)
-                        ->where('fid', $user_id)
+                        ->where('friend_id', $user_id)
                         ->find_one();
             if (!$relation1 || !$relation2) {
                 throw new Exception("No friendship found between specified users.");

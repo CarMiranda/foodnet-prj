@@ -199,12 +199,32 @@
         return json_decode(file_get_contents("php://input"));
     }
 
-    function results($res_set) {
-        $res = [];
-        foreach ($res_array as $row) {
-            $res_array[] = (object)$row->as_array();
+    function results($data) {
+        if (is_array($data)) {
+            $_data = [];
+            foreach ($data as $key => $value) {
+                if (get_class($value) == "ORM") {
+                    $_data[] = results($value);
+                } else {
+                    $_data[$key] = $value;
+                }
+            }
+        } else if (get_class($data) == "ORM") {
+            $_data = $data->as_array();
+        } else if (is_object($data)) {
+            $_data = [];
+            $_data_array = (array)$data;
+            foreach ($_data_array as $key => $value) {
+                if (is_array($value)) {
+                    $_data[$key] = results($value);
+                } else {
+                    $_data[$key] = $value;
+                }
+            }
+        } else {
+            $_data = $data;
         }
-        return $res_array;
+        return $_data;
     }
 
     function extractKey($result_set, $key) {
