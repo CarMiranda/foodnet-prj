@@ -2,8 +2,10 @@
 
     class Post {
 
-        public static function getByUser($id, $limit = 50, $offset = 0) {
+        public static function getByUser($id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
             $res = ORM::for_table('posts', 'app')
                    ->where('owner_id', $id)
                    ->limit($limit)
@@ -30,7 +32,7 @@
 
         public static function getByFriends($user_id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
-            $res = User::getFriendships($id);
+            $res = User::getFriendships($user_id);
             $ids = extractKey($res, "id");
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;
@@ -43,9 +45,10 @@
             return $res;
         }
 
-        public static function getByRegion($code_postal, $limit = NULL, $offset = NULL) {
+        public static function getByRegion($postal_code, $strict = NULL, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
-            $res = User::getByRegion($code_postal);
+            if (empty($strict)) $strict = FALSE;
+            $res = User::getByRegion($postal_code, $strict);
             $ids = extractKey($res, "id");
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;

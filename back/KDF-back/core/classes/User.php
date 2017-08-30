@@ -165,15 +165,19 @@
         }
 
         public static function getByRegion($postal_code, $strict = FALSE) {
-            ORM::set_db(DB::config('users'), 'users');
-            $res = ORM::for_table('users', 'users');
+            ORM::set_db(DB::factory('users'), 'users');
             if ($strict) {
-                $res->where('postal_code', $postal_code);
+                $res = ORM::for_table('users', 'users')
+                        ->where('postal_code', $postal_code)
+                        ->find_many();
             } else {
-                $_code = substr($postal_code, 0, 2);
-                $res->where_like('postal_code', '%' . $_code . '%');
+                $_code = (int)$postal_code;
+                $_code = $_code - $code % 1000;
+                $res = ORM::for_table('users', 'users')
+                        ->where_gte('postal_code', $_code)
+                        ->where_lte('postal_code', $_code + 999)
+                        ->find_many();
             }
-            $res->find_many();
             return $res;
         }
 
@@ -296,6 +300,7 @@
             $res = ORM::for_table('groups', 'app')
                         ->select('groups.id', 'id')
                         ->select('groups.name', 'name')
+                        ->select('users_x_groups.status', 'status')
                         ->left_outer_join('users_x_groups', 'groups.id = users_x_groups.group_id')
                         ->where('users_x_groups.user_id', $id)
                         ->where('groups.visibility', 1)
@@ -452,6 +457,7 @@
             $res = ORM::for_table('chats', 'app')
                    ->select('id', 'chat_id')
                    ->select('user_id2', 'receiver_id')
+                   ->select('last_active')
                    ->where('user_id1', $id)
                    ->limit($limit)
                    ->offset($offset)
