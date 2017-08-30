@@ -46,7 +46,6 @@
         }
 
         public static function getByRegion($postal_code, $strict = NULL, $limit = NULL, $offset = NULL) {
-            ORM::set_db(DB::factory('app'), 'app');
             if (empty($strict)) $strict = FALSE;
             $res = User::getByRegion($postal_code, $strict);
             $ids = extractKey($res, "id");
@@ -62,10 +61,26 @@
         }
 
         public static function getByRadius($lon, $lat, $radius, $limit = NULL, $offset = NULL) {
-            ORM::set_dn(DB::factory('app'), 'app');
+            $res = User::getByRadius($lon, $lat, $radius, $limit, $offset);
+            $ids = extractKey($res, 'id');
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;
-            return ORM::raw_execute('CALL geodist(' . $lon . ', ' . $lat . ', ' . $radius . ', ' . $limit . ', ' . $offset . ');');
+            ORM::set_db(DB::factory('app'), 'app');
+            $posts = ORM::for_table('posts', 'app')
+                     ->where_in('owner_id', $ids)
+                     ->limit($limit)
+                     ->offset($limit * $offset)
+                     ->order_by_asc('created_at')
+                     ->find_many();
+            foreach ($res as $row) {
+                $row->posts = [];
+                foreach ($posts as $post) {
+                    if ($post->owner_id == $row->id) {
+                        $row->posts[] = (object)$post->as_array();
+                    }
+                }
+            }
+            return $res;
         }
 
         public static function getByTags($tags_id, $limit = NULL, $offset = NULL) {
@@ -168,7 +183,7 @@
             return $res;
         }
 
-        public static function create($post_info) {
+        public static function create($user_id, $post_info) {
             ORM::set_db(DB::factory('app'), 'app');
             $post = ORM::for_table('posts', 'app')->create();
             if (isset($post_info->id)) unset($post_info->id);
@@ -176,6 +191,7 @@
             foreach ($_pinfo as $key => $value) {
                 $post->{$key} = $value;
             }
+            $post->owner_id = $user_id;
             $post->save();
             return $post;
         }

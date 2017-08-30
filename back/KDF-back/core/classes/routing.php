@@ -284,13 +284,13 @@
                 } else {
                     $request_body = parseRequestBody();
                     if ($method == "POST") {
-                        $result = Post::create($request_body);
+                        $result = Post::create($identifier, $request_body->data);
                         $error_msg = "Error creating post.";
                     } else if ($method == "PUT") {
-                        $result = Post::update($request_body);
+                        $result = Post::update($identifier, $request_body);
                         $error_msg = "Error updating post.";
                     } else if ($method == "DELETE") {
-                        $result = Post::remove($request_body);
+                        $result = Post::remove($identifier, $request_body);
                         $error_msg = "Error creating post.";
                     }
                 }

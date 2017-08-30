@@ -5,7 +5,7 @@
             $_code = "";
             for ($i = 0; $i < 5; ++$i) {
                 $digit = round(rand(0, 9));
-                $_code .= $i;
+                $_code .= $digit;
             }
             $html_body = "<div><h1>Code de validation : " . $_code . "</h1></div>";
             $headers =  'From: carlos.miranda_lopez@insa-rouen.fr' . "\r\n" .

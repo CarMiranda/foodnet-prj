@@ -52,7 +52,7 @@
         */
         private function from_request($user_info) {
             if (empty($user_info->uname) || empty($user_info->mail) || empty($user_info->password) || empty($user_info->fname) || empty($user_info->lname)) {
-                throw new Exception();
+                throw new Exception("Missing parameter.");
             } else {
                 self::exists($user_info->mail);
                 if ($this->orm) {
@@ -65,7 +65,7 @@
                     $this->orm->password = password_hash($user_info->password, PASSWORD_BCRYPT);
                     $this->orm->fname = $user_info->fname;
                     $this->orm->lname = $user_info->lname;
-                    $this->orm->reg_date = ($user_info->regdate ? $user_info->regdate : time());
+                    $this->orm->reg_date = ($user_info->regdate ? $user_info->regdate : date("Y-m-d H:i:s"));
                     $this->orm->status = ($user_info->status ? $user_info->status : 0);
                     $this->orm->address = ($user_info->address ? $user_info->address : NULL);
                     $this->orm->postal_code = ($user_info->postal_code ? $user_info->postal_code : 0);
@@ -75,7 +75,7 @@
                     $this->orm->dob = ($user_info->dob ? $user_info->dob : 0);
                     $this->orm->avatar = ($user_info->avatar ? $user_info->avatar : NULL);
                     $this->orm->lang = ($user_info->lang ? $user_info->lang : 'FR');
-                    $this->orm->last_seen = time();
+                    $this->orm->last_seen = date("Y-m-d H:i:s");
                 }
             }
         }
@@ -165,21 +165,44 @@
             $this->orm->save();
         }
 
-        public static function getByRegion($postal_code, $strict = FALSE) {
+        public static function getByRegion($postal_code, $strict = 0) {
             ORM::set_db(DB::factory('users'), 'users');
-            if ($strict) {
-                $res = ORM::for_table('users', 'users')
+            switch ($strict) {
+                case 1:
+                    $_code = (int)$postal_code;
+                    $_code = $_code - $code % 100;
+                    $res = ORM::for_table('users', 'users')
+                            ->where_gte('postal_code', $_code)
+                            ->where_lte('postal_code', $_code + 99)
+                            ->find_many();
+                break;
+                case 2:
+                    $res = ORM::for_table('users', 'users')
                         ->where('postal_code', $postal_code)
                         ->find_many();
-            } else {
-                $_code = (int)$postal_code;
-                $_code = $_code - $code % 1000;
-                $res = ORM::for_table('users', 'users')
-                        ->where_gte('postal_code', $_code)
-                        ->where_lte('postal_code', $_code + 999)
-                        ->find_many();
+                break;
+                default:
+                    $_code = (int)$postal_code;
+                    $_code = $_code - $code % 1000;
+                    $res = ORM::for_table('users', 'users')
+                            ->where_gte('postal_code', $_code)
+                            ->where_lte('postal_code', $_code + 999)
+                            ->find_many();
             }
             return $res;
+        }
+
+        public static function getByRadius($lon, $lat, $radius, $limit = NULL, $offset = NULL) {
+            ORM::set_db(DB::factory('users'), 'users');
+            if (empty($limit)) $limit = 50;
+            if (empty($offset)) $offset = 0;
+            ORM::raw_execute('CALL geodist(' . $lon .', '.$lat.', '.$radius.', '.$limit.', '.$offset.');', NULL, 'users');
+            $res = ORM::get_last_statement();
+            $rows = [];
+            while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
+                $rows[] = (object)$row;
+            }
+            return $rows;
         }
 
         /**
