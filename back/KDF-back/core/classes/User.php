@@ -15,12 +15,12 @@
         /**
         *   Main constructor. Redirects to other function constructors.
         *
-        *   @param mixed id User identifier or empty if user to be created
+        *   @param mixed id User identifier or request body if user to be created
         */
         public function __construct($id = NULL, $fetch_favorites = FALSE, $fetch_friends = FALSE, $fetch_groups = FALSE) {
             try {
-                if (empty($id)) {
-                    $this->from_request();
+                if (is_object($id)) {
+                    $this->from_request($id);
                 } else if (is_numeric($id)) {
                     $this->from_id($id);
                 } else if (is_string($id)) {
@@ -50,30 +50,31 @@
         /**
         *   New user constructor. Gets informations from the $_REQUEST array.
         */
-        private function from_request() {
-            if (empty($_REQUEST['uname']) || empty($_REQUEST['mail']) || empty($_REQUEST['password']) || empty($_REQUEST['fname']) || empty($_REQUEST['lname'])) {
+        private function from_request($user_info) {
+            if (empty($user_info->uname) || empty($user_info->mail) || empty($user_info->password) || empty($user_info->fname) || empty($user_info->lname)) {
                 throw new Exception();
             } else {
-                $this->from_email($_REQUEST['mail']);
-                if (!$this->orm) {
+                self::exists($user_info->mail);
+                if ($this->orm) {
                     throw new Exception("User with specified mail already exists.");
                 } else {
-                    $this->orm->create();
-                    $this->orm->uname = mysqli_real_escape_string($_REQUEST['uname']);
-                    $this->orm->mail = mysqli_real_escape_string($_REQUEST['mail']);
-                    $this->orm->password = password_hash($_REQUEST['password'], PASSWORD_BCRYPT);
-                    $this->orm->reg_date = (isset($_REQUEST['regdate']) ? mysqli_real_escape_string($_REQUEST['regdate']) : time());
-                    $this->orm->status = (isset($_REQUEST['status']) ? mysqli_real_escape_string($_REQUEST['status']) : NULL);
-                    $this->orm->fname = mysqli_real_escape_string($_REQUEST['fname']);
-                    $this->orm->address = mysqli_real_escape_string($_REQUEST["address"]);
-                    $this->orm->code_postal = mysqli_real_escape_string($_REQUEST["code_postal"]);
-                    $this->orm->lon = mysqli_real_escape_string($_REQUEST["lon"]);
-                    $this->orm->lat = mysqli_real_escape_string($_REQUEST["lat"]);
-                    $this->orm->lname = mysqli_real_escape_string($_REQUEST['lname']);
-                    $this->orm->gender = (isset($_REQUEST['gender']) ? mysqli_real_escape_string($_REQUEST['gender']) : NULL);
-                    $this->orm->dob = (isset($_REQUEST['dob']) ? mysqli_real_escape_string($_REQUEST['dob']) : NULL);
-                    $this->orm->avatar = (isset($_REQUEST['avatar']) ? mysqli_real_escape_string($_REQUEST['avatar']) : NULL);
-                    $this->orm->lang = (isset($_REQUEST['lang']) ? mysqli_real_escape_string($_REQUEST['lang']) : NULL);
+                    ORM::set_db(DB::factory('users'), 'users');
+                    $this->orm = ORM::for_table('users', 'users')->create();
+                    $this->orm->uname = $user_info->uname;
+                    $this->orm->mail = $user_info->mail;
+                    $this->orm->password = password_hash($user_info->password, PASSWORD_BCRYPT);
+                    $this->orm->fname = $user_info->fname;
+                    $this->orm->lname = $user_info->lname;
+                    $this->orm->reg_date = ($user_info->regdate ? $user_info->regdate : time());
+                    $this->orm->status = ($user_info->status ? $user_info->status : 0);
+                    $this->orm->address = ($user_info->address ? $user_info->address : NULL);
+                    $this->orm->postal_code = ($user_info->postal_code ? $user_info->postal_code : 0);
+                    $this->orm->lon = ($user_info->lon ? $user_info->lon : 0);
+                    $this->orm->lat = ($user_info->lat ? $user_info->lat : 0);
+                    $this->orm->gender = ($user_info->gender ? $user_info->gender : 0);
+                    $this->orm->dob = ($user_info->dob ? $user_info->dob : 0);
+                    $this->orm->avatar = ($user_info->avatar ? $user_info->avatar : NULL);
+                    $this->orm->lang = ($user_info->lang ? $user_info->lang : 'FR');
                     $this->orm->last_seen = time();
                 }
             }
@@ -476,8 +477,8 @@
             return $user->show();
         }
 
-        public static function create() {
-            $user = new User();
+        public static function create($user_info) {
+            $user = new User($user_info);
             $user->save();
             Mail::sendValidation($user->mail);
             return TRUE;

@@ -204,10 +204,10 @@
                                 }
                                 if ($method == "PUT") {
                                     // Change user information
-                                    $result = User::update($identifier, $request_body->user_info);
+                                    $result = User::update($identifier, $request_body->data);
                                 } else if ($method == "DELETE") {
                                     // Delete user
-                                    $result = User::remove($identifier, $request_body->user_id);
+                                    $result = User::remove($identifier, $request_body->data);
                                 } else {
                                     throw new Exception("Unhandled user action.");
                                 }
@@ -224,9 +224,9 @@
                     if ($method == "POST") {
                         $request_body = parseRequestBody();
                         if ($request_body->login) {
-                            $result = User::login($request_body);
+                            $result = User::login($request_body->data);
                         } else {
-                            $result = User::create();
+                            $result = User::create($request_body->data);
                         }
 
                         // Send data
@@ -316,13 +316,13 @@
                     }
                     if ($method == "POST") {
                         // Create new group
-                        $result = Group::create($identifier, $request_body->group_info);
+                        $result = Group::create($identifier, $request_body->data);
                     } else if ($method == "PUT") {
                         // Update group (name, status)
-                        $result = Group::update($identifier, $request_body->group_info);
+                        $result = Group::update($identifier, $request_body->data);
                     } else if ($method == "DELETE") {
                         // Remove group
-                        $result = Group::delete($identifier, $request_body->group_info);
+                        $result = Group::delete($identifier, $request_body->data);
                     }
                 }
 

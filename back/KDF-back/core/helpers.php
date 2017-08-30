@@ -196,7 +196,24 @@
     *
     */
     function parseRequestBody() {
-        return json_decode(file_get_contents("php://input"));
+        $request_body = json_decode(file_get_contents("php://input"));
+        /*$db = DB::factory('app');
+        recursive_db_escape($db, $request_body->data);*/
+        return $request_body;
+    }
+
+    function recursive_db_escape($db, &$data) {
+        if (is_object($data) || is_array($data)) {
+            foreach ($data as $key => $value) {
+                if (is_object($value) || is_array($value)) {
+                    $data->{$key} = recursive_db_escape($db, $data->{$key});
+                } else {
+                    $data->{$key} = $db->quote($value);
+                }
+            }
+        } else {
+            $data = $db->quote($data);
+        }
     }
 
     function results($data) {
