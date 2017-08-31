@@ -1,50 +1,42 @@
+import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { Camera } from '@ionic-native/camera';
-import { Keyboard } from '@ionic-native/keyboard';
-import { HttpModule } from '@angular/http';
-import { Geolocation } from '@ionic-native/geolocation';
-
-
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { HttpModule } from '@angular/http';
+import { Camera } from '@ionic-native/camera';
+
+
 import { HomePage } from '../pages/home/home';
-import { ConfirmationPage } from '../pages/confirmation/confirmation';
+import { LoginPage } from '../pages/login/login';
+import { WelcomePage} from '../pages/welcome/welcome';
+import { SignupPage} from '../pages/signup/signup';
+import { ConfirmationPage} from '../pages/confirmation/confirmation';
 import { CreatePostPage } from '../pages/create-post/create-post';
 import { LinefeedPage } from '../pages/linefeed/linefeed';
-import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { DbStorageProvider } from '../providers/db-storage/db-storage';
-import { TestGeolocaPage } from '../pages/test-geoloca/test-geoloca';
-import { WelcomePage } from '../pages/welcome/welcome';
-import { LoginPage } from '../pages/login/login';
-import { SignupPage } from '../pages/signup/signup';
-import { ProfilePage } from '../pages/profile/profile';
-import { FildactualitePage } from '../pages/fildactualite/fildactualite';
-import { MessageriePage } from '../pages/messagerie/messagerie';
+import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { ConversationPage } from '../pages/conversation/conversation';
-import { CustomHeaderComponent } from '../components/custom-header/custom-header';
-import { FakeCommentsProvider } from '../providers/fake-comments/fake-comments';
+import { FildactualitePage } from '../pages/fildactualite/fildactualite';
+
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
 import { ApiProvider } from '../providers/api/api';
+import { CustomHeaderComponent } from '../components/custom-header/custom-header';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
+    LoginPage,
+    WelcomePage,
+    SignupPage,
     ConfirmationPage,
     CreatePostPage,
     LinefeedPage,
     ProductDetailsPage,
-    TestGeolocaPage,
-    WelcomePage,
-    LoginPage,
-    SignupPage,
-    ProfilePage,
-    FildactualitePage,
-    MessageriePage,
+    ConversationPage,
     CustomHeaderComponent,
-    ConversationPage
+    FildactualitePage
   ],
   imports: [
     BrowserModule,
@@ -55,29 +47,23 @@ import { ApiProvider } from '../providers/api/api';
   entryComponents: [
     MyApp,
     HomePage,
+    LoginPage,
+    WelcomePage,
+    SignupPage,
     ConfirmationPage,
     CreatePostPage,
     LinefeedPage,
     ProductDetailsPage,
-    TestGeolocaPage,
-    WelcomePage,
-    LoginPage,
-    SignupPage,
-    ProfilePage,
-    FildactualitePage,
-    MessageriePage,
-    ConversationPage
+    ConversationPage,
+    FildactualitePage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    Geolocation,
     Camera,
-    Keyboard,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DbStorageProvider,
-    FakeCommentsProvider,
-    ApiProvider
+    ApiProvider,
+    DbStorageProvider
   ]
 })
 export class AppModule {}

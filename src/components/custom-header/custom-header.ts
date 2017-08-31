@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Platform, NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
@@ -29,7 +29,7 @@ export class CustomHeaderComponent {
 
   header_data : any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private camera: Camera, private sanitizer: DomSanitizer) {
   }
   @Input()
   set header(header_data: any) {

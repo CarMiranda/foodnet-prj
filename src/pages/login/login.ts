@@ -1,51 +1,35 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
-
-import {HomePage} from '../home/home';
+import { NavController,ToastController } from 'ionic-angular';
+import { HomePage } from '../home/home'
 import { ApiProvider } from '../../providers/api/api';
-
-@IonicPage()
 @Component({
   selector: 'page-login',
-  templateUrl: 'login.html',
+  templateUrl: 'login.html'
 })
 export class LoginPage {
-  userData = {"action":"PUT","login":true,"id":"Uname1","password":"Uname1"};
+
+  userData = {"action":"POST","login":true,
+  "data":{"id":"rj01","password":"rj01"}};
   responseData: any;
-  loginFailedMessage : "Identifiant ou mot de passe incorrect."
-  toast:any;
-  constructor(public navCtrl: NavController,public toastCtrl:ToastController, public navParams: NavParams, public apiprovider:ApiProvider) {
-    this.toast = this.toastCtrl.create({
-     message: this.loginFailedMessage,
-     duration: 3000
-   });
+
+  constructor(public navCtrl: NavController, public apiprovider:ApiProvider,public toastCtrl:ToastController) {
 
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
-  }
   login(){
-    //login avec identifiant et password (form?)
-    console.log(JSON.stringify(this.userData));
     this.apiprovider.postData(this.userData,"users").then((result)=>{
       this.responseData = result;
-      localStorage.setItem('authorizationToken',JSON.stringify(this.responseData.data));
-      console.log("responseDATA = "+this.responseData);
+      console.log(this.responseData);
+      console.log("connection established");
       this.navCtrl.push(HomePage);
-    }, (err)=>{
-      //Connection failed
+    }, (err) =>{
       console.log("connection failed");
-      this.toast.present();
+      let toast2 = this.toastCtrl.create({
+        message: 'CF: '+err,
+        duration: 3000,
+        position: 'bottom'
+      });
+      toast2.present();
     });
-    //this.navCtrl.push(HomePage);
-  }
-
-  loginfcb(){
-    this.navCtrl.push(HomePage);
-  }
-  loginLinkedin(){
-    //login avec compte Linkedin
-
   }
 }

@@ -9,8 +9,5 @@ import { ConversationPage } from './conversation';
   imports: [
     IonicPageModule.forChild(ConversationPage),
   ],
-  exports: [
-    ConversationPage
-  ]
 })
 export class ConversationPageModule {}

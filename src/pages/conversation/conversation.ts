@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { FakeCommentsProvider } from '../../providers/fake-comments/fake-comments';
-import { Keyboard } from '@ionic-native/keyboard';
-import { Events } from 'ionic-angular';
+// import { FakeCommentsProvider } from '../../providers/fake-comments/fake-comments';
+// import { Keyboard } from '@ionic-native/keyboard';
+// import { Events } from 'ionic-angular';
 
 
 @IonicPage()
@@ -17,19 +17,19 @@ export class ConversationPage {
   header_data:any;
   messages:any[];
   newMessage = {content:''}
-  constructor(private event: Events,private keyboard: Keyboard, public fakeCommentsProvider : FakeCommentsProvider) {
-    this.fakeCommentsProvider.getComments().then((data : any) => {
-      this.messages = data;
-    }, (err) => {
-      console.log(err);
-    });
+  constructor() {
+    // this.fakeCommentsProvider.getComments().then((data : any) => {
+    //   this.messages = data;
+    // }, (err) => {
+    //   console.log(err);
+    // });
     // header personnalisé
     this.header_data={isSearch:false,isCamera:true,isProfile:true,title:"KooDeFood"};
   }
 
   ionViewDidLoad() {
-    this.keyboard.onKeyboardShow().subscribe(() => this.event.publish('hideTabs'));
-    this.keyboard.onKeyboardHide().subscribe(() => this.event.publish('showTabs'));
+    // this.keyboard.onKeyboardShow().subscribe(() => this.event.publish('hideTabs'));
+    // this.keyboard.onKeyboardHide().subscribe(() => this.event.publish('showTabs'));
   }
 
   focus(){

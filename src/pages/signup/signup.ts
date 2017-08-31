@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 
 import {HomePage} from '../home/home';
 import { ApiProvider } from '../../providers/api/api';
@@ -13,16 +13,16 @@ export class SignupPage {
 
   //data to signup
   userData = {
-    "action":"PUT",
-    "login":false,
-    "id":"",
-    "username":"",
-    "password":"",
-    "email":""
-  };
+       "uname":"Uname",
+       "mail":"user.name@test.com",
+       "password":"Uname",
+       "fname":"User",
+       "lname":"Name"
+      };
 
+      responseData: any;
   // userData = { "username":"Uname1","password":"Uname1","id":"Uname1",}
-  constructor(public navCtrl: NavController, public navParams: NavParams, public apiprovider: ApiProvider) {
+  constructor(public navCtrl: NavController,public toastCtrl:ToastController, public navParams: NavParams, public apiprovider: ApiProvider) {
   }
 
   ionViewDidLoad() {
@@ -30,10 +30,26 @@ export class SignupPage {
   }
 
   signup(){
-    // Api Connection
-    //this.apiprovider.postData(this.userData)
+    let params =
+      {
+      "action":"POST",
+      "login":false,
+      "data":this.userData
+      }
+      this.apiprovider.postData(params,"users").then((result)=>{
+        this.responseData = result;
+        console.log(this.responseData);
+        this.navCtrl.push(HomePage);
+      }, (err) =>{
+        console.log("connection failed");
+    let toast2 = this.toastCtrl.create({
+  message: 'CF: '+err,
+  duration: 3000,
+  position: 'bottom'
+  });
+  toast2.present();
+      });
 
-    this.navCtrl.push(HomePage);
   }
 
   signUpFcb(){
