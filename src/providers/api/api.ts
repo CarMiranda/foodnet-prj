@@ -18,10 +18,8 @@ export class ApiProvider {
       if (withToken){
         headers.append('Authorization', 'Bearer '+this.token);
       }
-      console.log(  JSON.stringify(datas));;
       this.http.post(this.apiUrl+type,JSON.stringify(datas),{headers:headers})
       .subscribe(res=>{
-        console.log("resolve");
         let resjson = res.json();
         switch(resjson.status){
           case "exception": reject(resjson);break;
@@ -29,41 +27,22 @@ export class ApiProvider {
         };
       },(err) =>{
         reject(err);
-        console.log(err);
       });
     });
   }
 
   GETData(type,datas? :any,options?: RequestOptions){
+
     return new Promise((resolve,reject)=>{
-      //userAgent
-      // this.userAgent.set('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36')
-      //   .then((res: any) => console.log(res))
-      //   .catch((error: any) => console.error(error));
-    //Authorization token
       this.token =JSON.parse(localStorage.getItem('userToken'));
-  //     if (!options) {
-  //       options = new RequestOptions({
-  //         headers:headers
-  //       });
-  //      }
-  // let p = new URLSearchParams();
-  //      if (datas) {
-  //
-  //       for(let k in datas) {
-  //          p.set(k, datas[k]);
-  //       }
-        // options.search = !options.search && p || options.search;
-      // }
       console.log(  options);
       let url = this.apiUrl+type;
-
+      // Header contenant le token d'Authorization
       var headers = new Headers({
         'Authorization': 'Bearer '+this.token
       });
       this.http.get(url ,{headers:headers})
       .subscribe(res=>{
-        console.log(res);
         let resjson = res.json();
         switch(resjson.status){
           case "exception": reject(resjson);break;

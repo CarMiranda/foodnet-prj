@@ -3,7 +3,7 @@
 <ion-content class="list-avatar-page">
   <ion-list>
     <ion-list-header>Today</ion-list-header>
-    <ion-item *ngFor="let product of data" (click)="viewProduct(product.cell);">
+    <ion-item *ngFor="let product of data" (click)="startConversation(product.cell);">
       <ion-avatar item-start>
         <img src='{{product.picture.thumbnail}}'>
       </ion-avatar>

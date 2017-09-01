@@ -19,6 +19,7 @@ import { ConversationPage } from '../pages/conversation/conversation';
 import { FildactualitePage } from '../pages/fildactualite/fildactualite';
 import { ProfilePage } from '../pages/profile/profile';
 import { MessageriePage } from '../pages/messagerie/messagerie';
+import { OtherProfilePage } from '../pages/other-profile/other-profile';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -40,7 +41,8 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     CustomHeaderComponent,
     FildactualitePage,
     ProfilePage,
-    MessageriePage
+    MessageriePage,
+    OtherProfilePage
   ],
   imports: [
     BrowserModule,
@@ -61,7 +63,8 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     ConversationPage,
     FildactualitePage,
     ProfilePage,
-    MessageriePage
+    MessageriePage,
+    OtherProfilePage
   ],
   providers: [
     StatusBar,

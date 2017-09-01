@@ -12,8 +12,9 @@ export class ProfilePage {
   public userDetails: any;
   header_data:any;
   public data:any;
-  dataApi :any;
-  constructor(public app: App,public toastCtrl:ToastController, public apiprovider:ApiProvider, public platform: Platform, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
+  public dataApi :any;
+
+  constructor(public app: App,public toastCtrl:ToastController, public apiProvider:ApiProvider, public platform: Platform, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
     this.dbStorage.load(1).then((data : any) => {
       this.userDetails = data.results[0];
     }, (err) => {
@@ -21,9 +22,10 @@ export class ProfilePage {
     });
     this.data =JSON.parse(localStorage.getItem('userToken'));
     //recupDATA de L'api :
-    this.apiprovider.GETData("users").then((res)=>{
+    this.apiProvider.GETData("users").then((res)=>{
       this.dataApi=res;
-      console.log("ProfilePage : Get success"+res);
+      console.log("ProfilePage : Get success");
+      console.log(res);
     },(err)=>{
       console.log("ProfilePage : Get failed"+err);
       let messageERROR:string
@@ -45,7 +47,7 @@ export class ProfilePage {
       toast.present();
     });
     // header personnalisé
-    this.header_data={isSearch:false,isCamera:true,isProfile:false,title:this.data || ""};
+    this.header_data={isSearch:false,isCamera:true,isProfile:false,title:"Mon profil"};
   }
 
   backToWelcome(){
