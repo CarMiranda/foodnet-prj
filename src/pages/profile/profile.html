@@ -1,6 +1,6 @@
 <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
-<ion-content padding>
+<ion-content>
   <ion-item>
     <ion-avatar *ngIf='dataApi?.data.avatar' item-start>
       <img  ngsrc='dataApi?.data.thumbnail'>
@@ -28,20 +28,36 @@
 
   <ion-list style="position: absolute; bottom: 0; width:100%">
     <button ion-item>
-      <ion-icon name="key" item-start></ion-icon>
-        Mon Compte
+      <ion-icon name="heart" item-start></ion-icon>
+        Mes favoris
+        <ion-note *ngIf='!dataApi?.data.favorites' item-end>
+          (0)
+        </ion-note>
+        <ion-note *ngIf='dataApi?.data.favorites' item-end>
+          ({{dataApi?.data.favorites.length()}})
+        </ion-note>
     </button >
     <button ion-item>
       <ion-icon name="contacts" item-start></ion-icon>
-        Mes Contacts
+        Mes amis
+        <ion-note *ngIf='!dataApi?.data.friends' item-end>
+          (0)
+        </ion-note>
+        <ion-note *ngIf='dataApi?.data.friends' item-end>
+          ({{dataApi?.data.friends.length()}})
+        </ion-note>
     </button>
-    <button ion-item>
+    <button (click)="showMyPosts()" ion-item>
       <ion-icon name="pizza" item-start></ion-icon>
         Mes Posts
     </button >
     <button ion-item (click)="logout()">
       <ion-icon name="exit" item-start></ion-icon>
         Se Déconnecter
+    </button >
+    <button ion-item>
+      <ion-icon name="key" item-start></ion-icon>
+        Mon Compte
     </button >
     <button ion-item>
       <ion-icon name="help" item-start></ion-icon>

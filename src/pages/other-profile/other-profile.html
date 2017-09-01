@@ -32,7 +32,17 @@
         Contacter !
     </button >
     <button ion-item>
-      <ion-icon name="pizza" item-start></ion-icon>
+      <ion-icon name="contacts" item-start></ion-icon>
+        Amis de {{dataApi?.data.fname}}
+        <ion-note *ngIf='!dataApi?.data.friends' item-end>
+          (0)
+        </ion-note>
+        <ion-note *ngIf='dataApi?.data.friends' item-end>
+          ({{dataApi?.data.friends.length()}})
+        </ion-note>
+    </button>
+    <button (click)="showPosts()" ion-item>
+      <ion-icon  name="pizza" item-start></ion-icon>
         Posts
     </button >
   </ion-list>

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ToastController, App } from 'ionic
 import { ApiProvider } from '../../providers/api/api';
 
 import { ConversationPage } from '../conversation/conversation';
+import { ListePostdeUserPage } from '../liste-postde-user/liste-postde-user';
 /**
  * Generated class for the OtherProfilePage page.
  *
@@ -52,6 +53,12 @@ export class OtherProfilePage {
   startConversation(){
     this.app.getRootNav().push(ConversationPage, {
       'other_user_id':this.owner_id
+    });
+  }
+
+  showPosts(){
+    this.navCtrl.push(ListePostdeUserPage, {
+      'user_id':this.owner_id
     });
   }
 

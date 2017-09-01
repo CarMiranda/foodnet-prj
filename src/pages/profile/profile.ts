@@ -3,6 +3,7 @@ import { NavController, App, NavParams,ToastController } from 'ionic-angular';
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
 import { Platform } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
+import { ListePostdeUserPage } from '../liste-postde-user/liste-postde-user';
 
 @Component({
   selector: 'page-profile',
@@ -48,6 +49,12 @@ export class ProfilePage {
     });
     // header personnalisé
     this.header_data={isSearch:false,isCamera:true,isProfile:false,title:"Mon profil"};
+  }
+
+  showMyPosts(){
+    this.navCtrl.push(ListePostdeUserPage, {
+      'user_id':this.dataApi.data.id
+    });
   }
 
   backToWelcome(){
