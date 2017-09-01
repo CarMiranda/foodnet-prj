@@ -17,6 +17,8 @@ import { DbStorageProvider } from '../providers/db-storage/db-storage';
 import { ProductDetailsPage } from '../pages/product-details/product-details';
 import { ConversationPage } from '../pages/conversation/conversation';
 import { FildactualitePage } from '../pages/fildactualite/fildactualite';
+import { ProfilePage } from '../pages/profile/profile';
+import { MessageriePage } from '../pages/messagerie/messagerie';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -36,7 +38,9 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     ProductDetailsPage,
     ConversationPage,
     CustomHeaderComponent,
-    FildactualitePage
+    FildactualitePage,
+    ProfilePage,
+    MessageriePage
   ],
   imports: [
     BrowserModule,
@@ -55,7 +59,9 @@ import { CustomHeaderComponent } from '../components/custom-header/custom-header
     LinefeedPage,
     ProductDetailsPage,
     ConversationPage,
-    FildactualitePage
+    FildactualitePage,
+    ProfilePage,
+    MessageriePage
   ],
   providers: [
     StatusBar,

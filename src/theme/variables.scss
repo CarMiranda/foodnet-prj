@@ -41,6 +41,9 @@ $colors: (
   dark:       #222
 );
 
+// set toolbars of entire app to primary
+$toolbar-background: color($colors, primary);
+
 
 
 // App iOS Variables

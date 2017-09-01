@@ -9,7 +9,7 @@ import { ApiProvider } from '../../providers/api/api';
 export class LoginPage {
 
   userData = {"action":"POST","login":true,
-  "data":{"id":"rj01","password":"rj01"}};
+  "data":{"id":"","password":""}};
   responseData: any;
 
   constructor(public navCtrl: NavController, public apiprovider:ApiProvider,public toastCtrl:ToastController) {
@@ -17,19 +17,38 @@ export class LoginPage {
   }
 
   login(){
-    this.apiprovider.postData(this.userData,"users").then((result)=>{
+    this.apiprovider.postData("users",this.userData).then((result)=>{
       this.responseData = result;
-      console.log(this.responseData);
-      console.log("connection established");
+      console.log(result);
+     localStorage.setItem('userToken',JSON.stringify(this.responseData.data));
       this.navCtrl.push(HomePage);
     }, (err) =>{
-      console.log("connection failed");
-      let toast2 = this.toastCtrl.create({
-        message: 'CF: '+err,
+      let messageERROR:string
+      switch(err.status){
+        // 0 quand on a pas de connection
+        case 0:
+          messageERROR='Connexion à l\'api impossible';
+          break;
+          // exception quand l'api renvoie une exeption: pr l'instant yen a qu'une possible : mdp/login oncorrect
+        case "exception" :
+          messageERROR='Identifiant ou mot de passe incorrect';
+          break;
+      };
+      let toast = this.toastCtrl.create({
+        message: messageERROR,
         duration: 3000,
         position: 'bottom'
       });
-      toast2.present();
+      toast.present();
     });
   }
+
+  loginfcb(){
+    this.navCtrl.push(HomePage);
+  }
+
+  loginLinkedin(){
+
+  }
+
 }

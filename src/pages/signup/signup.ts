@@ -13,43 +13,52 @@ export class SignupPage {
 
   //data to signup
   userData = {
-       "uname":"Uname",
-       "mail":"user.name@test.com",
-       "password":"Uname",
-       "fname":"User",
-       "lname":"Name"
-      };
+  "action":"POST",
+  "login":false,
+  "data":{
+       "uname":"",
+       "mail":"",
+       "password":"",
+       "fname":"",
+       "lname":""
+      }
+  };
+  responseData: any;
 
-      responseData: any;
-  // userData = { "username":"Uname1","password":"Uname1","id":"Uname1",}
   constructor(public navCtrl: NavController,public toastCtrl:ToastController, public navParams: NavParams, public apiprovider: ApiProvider) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SignupPage');
-  }
-
   signup(){
-    let params =
-      {
-      "action":"POST",
-      "login":false,
-      "data":this.userData
-      }
-      this.apiprovider.postData(params,"users").then((result)=>{
+      this.apiprovider.postData("users",this.userData).then((result)=>{
         this.responseData = result;
-        console.log(this.responseData);
-        this.navCtrl.push(HomePage);
+        console.log(result);
+        // localstorage.setItem('userToken',)
+        let toast = this.toastCtrl.create({
+          message: "Le compte a bien été créé.",
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
       }, (err) =>{
-        console.log("connection failed");
-    let toast2 = this.toastCtrl.create({
-  message: 'CF: '+err,
-  duration: 3000,
-  position: 'bottom'
-  });
-  toast2.present();
-      });
-
+        let messageERROR:string;
+        console.log(err);
+        switch(err.status){
+          // 0 quand on a pas de connection
+          case 0:
+            messageERROR='Connexion à l\'api impossible';
+            break;
+            // exception quand l'api renvoie une exeption: pr l'instant yen a qu'une possible : mdp/login oncorrect
+          case "exception" :
+            messageERROR='Mauvaix parametres';
+            break;
+        };
+        let toast = this.toastCtrl.create({
+          message: messageERROR,
+          duration: 3000,
+          position: 'bottom'
+        });
+        toast.present();
+    });
   }
 
   signUpFcb(){

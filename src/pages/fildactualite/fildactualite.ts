@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, Platform } from 'ionic-angular';
 // import { DomSanitizer } from '@angular/platform-browser';
 
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
@@ -20,7 +20,7 @@ export class FildactualitePage {
   comments:string[];
   header_data:any;
 
-  constructor(public app: App, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
+  constructor(private platform : Platform, public app: App, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
     this.comments = ["efzrefz","trololo","kerjg"];
     this.dbStorage.load(3).then((data : any) => {
       this.data = data.results;
@@ -29,7 +29,12 @@ export class FildactualitePage {
     });
     // header personnalisé
     this.header_data={isSearch:true,isCamera:true,isProfile:true,title:"KooDeFood"};
+    platform.ready().then(() => {
+      platform.registerBackButtonAction(() => {
+      });
+    });
   }
+
 
   openCommentSection(id: string){
     let idx : number = this.data.findIndex((el) => {
