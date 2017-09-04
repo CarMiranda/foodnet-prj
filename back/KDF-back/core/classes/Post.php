@@ -9,14 +9,14 @@
             $res = ORM::for_table('posts', 'app')
                    ->where('owner_id', $id)
                    ->limit($limit)
-                   ->offset($offset*$limit)
+                   ->offset($offset * $limit)
                    ->find_many();
             return $res;
         }
 
-        public static function getByGroup($id, $limit = NULL, $offset = NULL) {
+        public static function getByGroup($group_id, $limit = NULL, $offset = NULL) {
             ORM::set_db(DB::factory('app'), 'app');
-            $res = Group::getUsers($id);
+            $res = Group::getUsers($group_id);
             $ids = extractKey($res, "id");
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;
@@ -24,7 +24,7 @@
                    ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset*$limit)
+                   ->offset($offset * $limit)
                    ->find_many();
             return $res;
             
@@ -40,7 +40,7 @@
                    ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset*$limit)
+                   ->offset($offset * $limit)
                    ->find_many();
             return $res;
         }
@@ -55,7 +55,7 @@
                    ->where_in('owner_id', $ids)
                    ->order_by_asc('created_at')
                    ->limit($limit)
-                   ->offset($offset*$limit)
+                   ->offset($offset * $limit)
                    ->find_many();
             return $res;
         }
@@ -87,12 +87,20 @@
             ORM::set_db(DB::factory('app'), 'app');
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;
+            foreach ($tags_id as $key => $value) {
+                $tags_id[$key] = (int)$value;
+            }
             $res = ORM::for_table('posts', 'app')
-                   ->left_outer_join(APP__DB_NAME . '.posts_x_tags', 'posts_x_tags.tag_id IN = posts.id')
-                   ->where_in('posts_x_tags', $tags_id)
-                   ->order_by_asc('created_at')
+                   ->select('posts.*')
+                   ->select_expr('GROUP_CONCAT(tag_id)', 'tags')
+                   ->select_expr('COUNT(id)', 'nb_tags')
+                   ->left_outer_join(APP__DB_NAME . '.posts_x_tags', 'posts_x_tags.post_id = posts.id')
+                   ->where_raw('posts_x_tags.tag_id IN (' . rtrim(implode(', ', $tags_id), ',') . ')')
+                   ->group_by('posts.id')
+                   ->order_by_desc('nb_tags')
+                   ->order_by_desc('created_at')
                    ->limit($limit)
-                   ->offset($offset*$limit)
+                   ->offset($offset * $limit)
                    ->find_many();
             return $res;
         }
@@ -193,6 +201,9 @@
             }
             $post->owner_id = $user_id;
             $post->save();
+            if (!empty($_FILES['upfile'])) {
+                Image::upload('post_img', (string)$post->id);
+            }
             return $post;
         }
 

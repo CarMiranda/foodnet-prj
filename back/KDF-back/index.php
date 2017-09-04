@@ -7,6 +7,7 @@
     include 'core/classes/Post.php';
     include 'core/classes/Chat.php';
     include 'core/classes/Mail.php';
+    include 'core/classes/File.php';
     include 'core/helpers.php';
     include 'loader.php';
 

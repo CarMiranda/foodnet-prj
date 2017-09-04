@@ -27,13 +27,16 @@
         // First get all headers from request
         $headers = getallheaders();
 
-        if (empty($headers['Authorization'])) {
+        if (empty($headers['Authorization']) && empty($headers['authorization'])) {
             return false;
         }
-        if (!preg_match('/Bearer\s.+/', $headers['Authorization'])) {
+
+        $auth = (empty($headers['Authorization']) ? $headers['authorization'] : $headers['Authorization']);
+
+        if (!preg_match('/Bearer\s.+/', $auth)) {
             throw new Exception("Invalid authorization header.");
         }
-        $auth = explode(' ', $headers['Authorization']);
+        $auth = explode(' ', $auth);
         if (count($auth) != 2 || !validateJWT($auth[1])) {
             throw new Exception("Invalid authentication token.");
         }

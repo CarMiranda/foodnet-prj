@@ -11,6 +11,11 @@
     require_once "Response.php";
     $response = new Response();
 
+    if ($_REQUEST['path'] == "upload") {
+        File::uploadImg();
+        die;
+    }
+
     try {
         if (empty(rtrim($_REQUEST["path"], '/'))) {
             // URI is empty. Send a welcome message.
@@ -283,15 +288,42 @@
                     }
                 } else {
                     $request_body = parseRequestBody();
-                    if ($method == "POST") {
-                        $result = Post::create($identifier, $request_body->data);
-                        $error_msg = "Error creating post.";
-                    } else if ($method == "PUT") {
-                        $result = Post::update($identifier, $request_body);
-                        $error_msg = "Error updating post.";
-                    } else if ($method == "DELETE") {
-                        $result = Post::remove($identifier, $request_body);
-                        $error_msg = "Error creating post.";
+                    switch ($ressource[1]) {
+                        case "comment" :
+                            if ($method == "POST") {
+                                $result = Post::addComment($identifier, $request_body->post_id);
+                                $error_msg = "Error adding comment.";
+                            } else if ($method == "PUT") {
+                                $result = Post::updateComment($identifier, $request_body->post_id, $request_body->comment, $request_body->created_at);
+                                $error_msg = "Error updating comment.";
+                            } else if ($method == "DELETE") {
+                                $result = Post::removeComment($identifier, $request_body->post_id);
+                                $error_msg = "Error deleting comment.";
+                            }
+                        break;
+                        case "like" :
+                            if ($method == "POST") {
+                                $result = Post::addLike($identifier, $request_body->post_id);
+                                $error_msg = "Error adding like.";
+                            } /*else if ($method == "PUT") {
+                                $result = Post::update($identifier, $request_body);
+                                $error_msg = "Error updating post.";
+                            } */else if ($method == "DELETE") {
+                                $result = Post::removeLike($identifier, $request_body->post_id);
+                                $error_msg = "Error deleting like.";
+                            }
+                        break;
+                        default :
+                            if ($method == "POST") {
+                                $result = Post::create($identifier, $request_body->data);
+                                $error_msg = "Error creating post.";
+                            } else if ($method == "PUT") {
+                                $result = Post::update($identifier, $request_body);
+                                $error_msg = "Error updating post.";
+                            } else if ($method == "DELETE") {
+                                $result = Post::remove($identifier, $request_body);
+                                $error_msg = "Error creating post.";
+                            }
                     }
                 }
 
