@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, Platform, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, ToastController,Platform } from 'ionic-angular';
 // import { DomSanitizer } from '@angular/platform-browser';
 
 import { DbStorageProvider } from '../../providers/db-storage/db-storage';
@@ -14,7 +14,6 @@ import { OtherProfilePage } from '../other-profile/other-profile';
 })
 export class FildactualitePage {
 
-  private data: any[];
   public item:string="";
   isSearchbarOn: boolean =false;
   swipe: number = 0;
@@ -24,13 +23,8 @@ export class FildactualitePage {
   private dataApi :any[];
   private nbAppel : number;
 
-  constructor(private apiProvider : ApiProvider,public toastCtrl:ToastController, private platform : Platform, public app: App, public navCtrl: NavController, public navParams: NavParams, public dbStorage: DbStorageProvider) {
+  constructor(private platform : Platform, private apiProvider : ApiProvider,public toastCtrl:ToastController, public app: App, public navCtrl: NavController, public navParams: NavParams) {
     this.comments = ["efzrefz","trololo","kerjg"];
-    this.dbStorage.load(3).then((data : any) => {
-      this.data = data.results;
-    }, (err) => {
-      console.log(err);
-    });
     // header personnalisé
     this.header_data={isSearch:true,isCamera:true,isProfile:true,title:"KooDeFood"};
     platform.ready().then(() => {
@@ -44,13 +38,8 @@ export class FildactualitePage {
 
 
   openCommentSection(id: string){
-    let idx : number = this.data.findIndex((el) => {
-      return el.cell == id;
-    });
-
-    console.log(this.data[idx].cell);
-
-    var container = document.getElementById(this.data[idx].cell);
+    console.log(id)
+    var container = document.getElementById(id);
     for(var i=0;i<3;i++){
         container.insertAdjacentHTML('beforeend','<p>'+this.comments[i]+'</p>');
     }
@@ -72,13 +61,11 @@ export class FildactualitePage {
       if (this.nbAppel==0){
 
         this.dataApi = this.temp.data;
-        console.log("1ere fois")
       }else{
         for (var i = 0; i < 3; ++i) {
           this.dataApi.push(this.temp.data[i]);
         }
       }
-      console.log(this.dataApi)
     },(err)=>{
       let messageERROR:string
       switch(err.status){
@@ -88,7 +75,7 @@ export class FildactualitePage {
           break;
           // exception quand l'api renvoie une exeption: pr l'
         case "exception" :
-          messageERROR='exception';
+          messageERROR=err.data.message;
           break;
       };
       let toast = this.toastCtrl.create({
@@ -108,9 +95,25 @@ export class FildactualitePage {
   }
 
   showProduct(product){
+    console.log(product)
     this.app.getRootNav().push(ProductDetailsPage, {
       'product': product
     });
   }
+
+  doRefresh(refresher) {
+    console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      // clear data, then load a whole new feed
+      this.dataApi =[];
+      this.nbAppel = 0;
+      this.loadData();
+      console.log('Async operation has ended');
+      refresher.complete();
+    }, 3000);
+  }
+
+
 
 }

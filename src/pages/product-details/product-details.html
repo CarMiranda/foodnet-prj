@@ -4,16 +4,16 @@
   <ion-card>
     <ion-item>
       <ion-avatar item-start>
-        <img src="{{product.picture.thumbnail}}">
+        <img src="{{product?.image}}">
       </ion-avatar>
-      <h2>{{product.name.first + ' ' + product.name.last}}</h2>
-      <p>{{product.dob}}</p>
+      <h2>{{product?.name}}</h2>
+      <p>{{owner_data?.data.fname + "  "+owner_data?.data.lname}}</p>
     </ion-item>
     <ion-card-header>
       Description :
     </ion-card-header>
     <ion-card-content>
-      {{description}}
+      {{product?.description}}
     </ion-card-content>
   </ion-card>
   <img src="assets/imgs/example_nourriture.jpg">
@@ -24,12 +24,11 @@
   </ion-list-header>
   <ion-item>Date de péremption :
     <ion-note item-end>
-    {{product.registered}}
+    {{product?.exp_date}}
     </ion-note>
   </ion-item>
   <ion-item>Région
     <ion-note item-end>
-    {{product.location.city}}
     </ion-note>
   </ion-item>
 </ion-list>

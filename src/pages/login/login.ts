@@ -9,7 +9,7 @@ import { ApiProvider } from '../../providers/api/api';
 export class LoginPage {
 
   userData = {"action":"POST","login":true,
-  "data":{"id":"","password":""}};
+  "data":{"id":"R","password":"r"}};
   responseData: any;
 
   constructor(public navCtrl: NavController, public apiprovider:ApiProvider,public toastCtrl:ToastController) {
@@ -31,7 +31,7 @@ export class LoginPage {
           break;
           // exception quand l'api renvoie une exeption: pr l'instant yen a qu'une possible : mdp/login oncorrect
         case "exception" :
-          messageERROR='Identifiant ou mot de passe incorrect';
+          messageERROR=err.data.message;
           break;
       };
       let toast = this.toastCtrl.create({

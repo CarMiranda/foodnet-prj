@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 
-import {HomePage} from '../home/home';
+// import {HomePage} from '../home/home';
 import { ApiProvider } from '../../providers/api/api';
 
 @IonicPage()
@@ -41,7 +41,6 @@ export class SignupPage {
         toast.present();
       }, (err) =>{
         let messageERROR:string;
-        console.log(err);
         switch(err.status){
           // 0 quand on a pas de connection
           case 0:
@@ -49,7 +48,7 @@ export class SignupPage {
             break;
             // exception quand l'api renvoie une exeption: pr l'instant yen a qu'une possible : mdp/login oncorrect
           case "exception" :
-            messageERROR='Mauvaix parametres';
+            messageERROR=err.data.message;
             break;
         };
         let toast = this.toastCtrl.create({

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers,URLSearchParams, RequestOptions } from '@angular/http';
+import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 // import { UserAgent } from '@ionic-native/user-agent';
 
@@ -41,9 +41,12 @@ export class ApiProvider {
       var headers = new Headers({
         'Authorization': 'Bearer '+this.token
       });
+      console.log(headers);
       this.http.get(url ,{headers:headers})
       .subscribe(res=>{
         let resjson = res.json();
+        console.log(resjson);
+        console.log(res);
         switch(resjson.status){
           case "exception": reject(resjson);break;
           case "success" : resolve(resjson);break;

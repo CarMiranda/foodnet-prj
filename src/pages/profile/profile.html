@@ -2,10 +2,10 @@
 
 <ion-content>
   <ion-item>
-    <ion-avatar *ngIf='dataApi?.data.avatar' item-start>
-      <img  ngsrc='dataApi?.data.thumbnail'>
+    <ion-avatar (click)="presentActionSheet()" *ngIf='dataApi?.data.avatar' item-start>
+      <img ngsrc='dataApi?.data.thumbnail'>
     </ion-avatar>
-    <ion-avatar *ngIf='!dataApi?.data.avatar' item-start>
+    <ion-avatar (click)="presentActionSheet()" *ngIf='!dataApi?.data.avatar' item-start>
       <img  src='assets/imgs/avatar.jpg'>
     </ion-avatar>
     <h2 item-end>{{dataApi?.data?.fname+" "+dataApi?.data?.lname}}</h2>
