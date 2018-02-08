@@ -11,22 +11,27 @@
 
     <ion-item>
       <ion-label fixed>Name</ion-label>
-      <ion-input [(ngModel)]="userData.id" type="text" value=""></ion-input>
+      <ion-input [(ngModel)]="userData.data.uname" type="text" value=""></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label fixed>Email</ion-label>
-      <ion-input [(ngModel)]="userData.email" type="email" value=""></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label fixed>Username</ion-label>
-      <ion-input [(ngModel)]="userData.username" type="text" value=""></ion-input>
+      <ion-input [(ngModel)]="userData.data.mail" type="email" value=""></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label fixed>Password</ion-label>
-      <ion-input [(ngModel)]="userData.password" type="password"></ion-input>
+      <ion-input [(ngModel)]="userData.data.password" type="password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>First Name</ion-label>
+      <ion-input [(ngModel)]="userData.data.fname" type="text" value=""></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Last Name</ion-label>
+      <ion-input [(ngModel)]="userData.data.lname" type="text" value=""></ion-input>
     </ion-item>
 
   </ion-list>

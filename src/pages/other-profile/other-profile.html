@@ -1,11 +1,11 @@
 <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
-<ion-content>
+<ion-content padding>
   <ion-item>
-    <ion-avatar (click)="presentActionSheet()" *ngIf='dataApi?.data.avatar' item-start>
-      <img ngsrc='dataApi?.data.thumbnail'>
+    <ion-avatar *ngIf='dataApi?.data.avatar' item-start>
+      <img  ngsrc='dataApi?.data.thumbnail'>
     </ion-avatar>
-    <ion-avatar (click)="presentActionSheet()" *ngIf='!dataApi?.data.avatar' item-start>
+    <ion-avatar *ngIf='!dataApi?.data.avatar' item-start>
       <img  src='assets/imgs/avatar.jpg'>
     </ion-avatar>
     <h2 item-end>{{dataApi?.data?.fname+" "+dataApi?.data?.lname}}</h2>
@@ -27,19 +27,13 @@
 
 
   <ion-list style="position: absolute; bottom: 0; width:100%">
-    <button ion-item>
-      <ion-icon name="heart" item-start></ion-icon>
-        Mes favoris
-        <ion-note *ngIf='!dataApi?.data.favorites' item-end>
-          (0)
-        </ion-note>
-        <ion-note *ngIf='dataApi?.data.favorites' item-end>
-          ({{dataApi?.data.favorites.length()}})
-        </ion-note>
+    <button (click)="startConversation()" ion-item>
+      <ion-icon name="chatboxes" item-start></ion-icon>
+        Contacter !
     </button >
     <button ion-item>
       <ion-icon name="contacts" item-start></ion-icon>
-        Mes amis
+        Amis de {{dataApi?.data.fname}}
         <ion-note *ngIf='!dataApi?.data.friends' item-end>
           (0)
         </ion-note>
@@ -47,21 +41,9 @@
           ({{dataApi?.data.friends.length()}})
         </ion-note>
     </button>
-    <button (click)="showMyPosts()" ion-item>
-      <ion-icon name="pizza" item-start></ion-icon>
-        Mes Posts
+    <button (click)="showPosts()" ion-item>
+      <ion-icon  name="pizza" item-start></ion-icon>
+        Posts
     </button >
-    <button ion-item (click)="logout()">
-      <ion-icon name="exit" item-start></ion-icon>
-        Se Déconnecter
-    </button >
-    <button ion-item>
-      <ion-icon name="key" item-start></ion-icon>
-        Mon Compte
-    </button >
-    <button ion-item>
-      <ion-icon name="help" item-start></ion-icon>
-        Aide
-    </button>
   </ion-list>
 </ion-content>

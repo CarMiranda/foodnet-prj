@@ -9,8 +9,5 @@ import { MessageriePage } from './messagerie';
   imports: [
     IonicPageModule.forChild(MessageriePage),
   ],
-  exports: [
-    MessageriePage
-  ]
 })
 export class MessageriePageModule {}

@@ -1,5 +1,8 @@
 <ion-header>
   <ion-navbar>
+    <ion-title>
+      Créer un nouveau Post
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -8,20 +11,49 @@
 
 <ion-content>
     <div id="ctn">
-      <span id="helper"></span>
+
         <img [src]="imageData"/>
     </div>
-    <form #form="ngForm" (ngSubmit)="logForm(form)" name="thisForm" novalidate>
+    <ion-list class="list">
       <ion-item>
-        <ion-label>Product</ion-label>
-        <ion-input type="text" required [(ngModel)]="post.title" ngControl="title" name="title"></ion-input>
+        <ion-label fixed>Produit</ion-label>
+        <ion-input type="text" value="" ngControl="title" [(ngModel)]="post.title"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label id="description" fixed>Description</ion-label>
+        <ion-textarea type="text" ngControl="description" [(ngModel)]="post.description"></ion-textarea>
       </ion-item>
       <ion-item>
-        <ion-label>Description</ion-label>
-        <ion-textarea [(ngModel)]="post.description" ngControl="description" name="description"></ion-textarea>
-      </ion-item>
-      <button ion-button type="submit" block color="primary">Post</button>
-    </form>
+      <ion-label>Date de péremption</ion-label>
+      <ion-datetime displayFormat="MMM DD YYYY" [min]='today' max='2020'[(ngModel)]="post.exp_date"></ion-datetime>
+    </ion-item>
+
+      <button ion-button block color="light" (click)="logForm()"> Créer ! </button>
+    </ion-list>
+
+
+
+
+
+
+
+
+
+
 
     <div id="data"></div>
 </ion-content>
+
+
+<!-- <form #form="ngForm" (ngSubmit)="logForm(form)" name="thisForm" novalidate>
+  <ion-item>
+    <ion-label>Product</ion-label>
+    <ion-input type="text" required [(ngModel)]="post.title" ngControl="title" name="title"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Description</ion-label>
+    <ion-textarea [(ngModel)]="post.description" ngControl="description" name="description"></ion-textarea>
+  </ion-item>
+  <button ion-button type="submit" block color="primary">Post</button>
+</form> -->

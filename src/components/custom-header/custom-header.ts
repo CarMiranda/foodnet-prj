@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { Platform, NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams,ActionSheetController, App } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 import { ProfilePage } from '../../pages/profile/profile';
-import { ConfirmationPage } from '../../pages/confirmation/confirmation';
+import { CreatePostPage } from '../../pages/create-post/create-post';
 import { LinefeedPage } from '../../pages/linefeed/linefeed';
 /**
  * Generated class for the CustomHeaderComponent component.
@@ -29,7 +29,7 @@ export class CustomHeaderComponent {
 
   header_data : any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private camera: Camera, private sanitizer: DomSanitizer) {
+  constructor(public app: App, public actionSheetCtrl: ActionSheetController, public navCtrl: NavController, public navParams: NavParams, private camera: Camera, private sanitizer: DomSanitizer) {
   }
   @Input()
   set header(header_data: any) {
@@ -37,6 +37,34 @@ export class CustomHeaderComponent {
   }
   get header() {
     return this.header_data;
+  }
+
+  presentActionSheet() {
+    console.log("presentActionSheet")
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Créez un nouveau Post !',
+      buttons: [
+        {
+          text: 'Ouvrir la caméra',
+          role: 'destructive',
+          handler: () => {
+            this.openCamera();
+          }
+        },{
+          text: 'Choisir dans ma galerie',
+          handler: () => {
+            this.selectFromGallery();
+          }
+        },{
+          text: 'Annuler',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
   }
 
 
@@ -51,6 +79,25 @@ export class CustomHeaderComponent {
     searchbar(){
       this.isSearchbarOn=!this.isSearchbarOn;
     }
+
+    selectFromGallery() {
+      let options : CameraOptions = {
+        sourceType: 0,      // Photo album
+        destinationType: 1  // FILE_URI
+      };
+      this.camera.getPicture(options).then((imageData) => {
+        this.cameraUrl = this.sanitizer.bypassSecurityTrustUrl(imageData);
+        this.photoSelected = true;
+        this.photoTaken = false;
+        this.app.getRootNav().push( CreatePostPage, {
+          'imageSource': 0,
+          'imageData': this.cameraUrl
+        });
+      }, (err) => {
+        console.log(err);
+      })
+    }
+
 
     openCamera() {
       let options : CameraOptions = {
@@ -69,7 +116,7 @@ export class CustomHeaderComponent {
         this.cameraData = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + imageData);
         this.photoTaken = true;
         this.photoSelected = false;
-        this.navCtrl.push( ConfirmationPage, {
+        this.app.getRootNav().push(CreatePostPage, {
           'imageSource': 1,
           'imageData': this.cameraData
         });

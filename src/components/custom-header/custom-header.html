@@ -8,7 +8,7 @@
     <button ion-button *ngIf="header_data.isSearch" icon-only (click)="searchbar()">
       <ion-icon name="search"></ion-icon>
     </button>
-    <button ion-button *ngIf="header_data.isCamera" icon-only (click)="openCamera()">
+    <button ion-button *ngIf="header_data.isCamera" icon-only (click)="presentActionSheet()">
       <ion-icon name="camera"></ion-icon>
     </button>
     <button ion-button *ngIf="header_data.isProfile" icon-only (click)="go('ProfilePage')">
@@ -16,7 +16,7 @@
     </button>
   </ion-buttons>
 
-  <ion-searchbar *ngIf="isSearchbarOn" placeholder="Filter Items" (ionBlur)="blur()" (ionFocus)="focus()" (ionInput)="getItems($event)"></ion-searchbar>
+  <ion-searchbar *ngIf="isSearchbarOn" placeholder="Filter Items" (ionBlur)="blur()" (ionFocus)="focus()" (ionInput)="clear($event)"></ion-searchbar>
 </ion-navbar>
 
 <div *ngIf="isOn">

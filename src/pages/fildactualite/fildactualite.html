@@ -1,33 +1,42 @@
 <ion-header><custom-header [header]="header_data"></custom-header></ion-header>
 
   <ion-content >
-      <ion-card style="position:relative;" *ngFor="let post of data" >
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-        <ion-item>
+      <p margin style="margin-top::50px" *ngIf='nbAppel == 0'>
+        Erreur de connection : glisser vers le bas pour rafraichir la page
+      </p>
+
+
+      <ion-card style="position:relative;" *ngFor='let post of dataApi' >
+
+        <ion-item (click)="showUserProfile(post.owner_id)">
           <ion-avatar item-start>
-            <img src="{{post.picture.thumbnail}}">
+            <img src="{{post.avatar}}">
           </ion-avatar>
-          <h2>{{post.name.first + ' ' + post.name.last}}</h2>
-          <p>{{post.dob}}</p>
+          <h2>{{post.owner_id}}</h2>
+          <p>{{post.created_at}}</p>
         </ion-item>
-        <ion-card-header (click)="showProduct(post)">
-          POST TITLE
+        <ion-card-header (click)="showProduct(post.id)">
+          {{post.name}}
         </ion-card-header>
-        <img (click)="showProduct(post)" src="assets/imgs/example_nourriture.jpg">
-
+        <img *ngIf='!post.image' (click)="showProduct(post)" src="assets/imgs/example_nourriture.jpg">
+        <img *ngIf='post.image' (click)="showProduct(post)" ngsrc="post.image">
         <ion-card-content>
-          <p>{{post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city+post.location.city}}</p>
+          <h2>Description :</h2>
+        <p>
+
+            {{post.description}}</p>
+          <ion-note>
+            Périme le : {{post.exp_date}}
+          </ion-note>
         </ion-card-content>
 
         <ion-row>
-          <!-- <ion-col>
-            <button ion-button icon-left clear small>
-              <ion-icon name="thumbs-up"></ion-icon>
-              <div>12 Likes</div>
-            </button>
-          </ion-col> -->
           <ion-col>
-            <button ion-button icon-left clear small (click)="openCommentSection(post.cell)">
+            <button ion-button icon-left clear small (click)="openCommentSection(post.id)">
               <ion-icon name="text"></ion-icon>
               <div>4 Comments</div>
             </button>
@@ -39,11 +48,16 @@
           </ion-col>
         </ion-row>
 
-        <div id='{{post.cell}}'>
+        <div id={{post.id}}>
           <div innerHTML="item"></div>
         </div>
 
       </ion-card>
+      <ion-item *ngIf='this.dataApi == []'>
+        <p>
+          Erreur de connection : glisser vers le bas pour rafraichir la page
+        </p>
+      </ion-item>
 
       <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
      <ion-infinite-scroll-content></ion-infinite-scroll-content>

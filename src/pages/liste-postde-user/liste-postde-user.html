@@ -1,0 +1,14 @@
+<ion-header><custom-header [header]="header_data"></custom-header></ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngFor="let post of dataApi">
+      <ion-avatar item-start>
+        <img ngsrc="post.image">
+      </ion-avatar>
+      <h2>{{post.name}}</h2>
+      <p>Description</p>
+      <ion-note item-end>{{post.created_at}}</ion-note>
+    </ion-item>
+  </ion-list>
+</ion-content>

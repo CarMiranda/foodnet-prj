@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
-
-import {HomePage} from '../home/home';
+import { NavController,ToastController } from 'ionic-angular';
+import { HomePage } from '../home/home'
 import { ApiProvider } from '../../providers/api/api';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { UserProvider } from '../../providers/user/user';
@@ -10,44 +9,52 @@ import { HomePage } from '../home/home';
 @IonicPage()
 @Component({
   selector: 'page-login',
-  templateUrl: 'login.html',
+  templateUrl: 'login.html'
 })
 export class LoginPage {
-  userData = {"action":"PUT","login":true,"id":"Uname1","password":"Uname1"};
+
+  userData = {"action":"POST","login":true,
+  "data":{"id":"R","password":"r"}};
   responseData: any;
-  loginFailedMessage : "Identifiant ou mot de passe incorrect."
-  toast:any;
-  constructor(public navCtrl: NavController,public toastCtrl:ToastController, public navParams: NavParams, public apiprovider:ApiProvider) {
-    this.toast = this.toastCtrl.create({
-     message: this.loginFailedMessage,
-     duration: 3000
-   });
+
+  constructor(public navCtrl: NavController, public apiprovider:ApiProvider,public toastCtrl:ToastController) {
 
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
-  }
   login(){
-    //login avec identifiant et password (form?)
-    console.log(JSON.stringify(this.userData));
-    this.apiprovider.postData(this.userData,"users").then((result)=>{
+    this.apiprovider.postData("users",this.userData).then((result)=>{
       this.responseData = result;
-      localStorage.setItem('authorizationToken',JSON.stringify(this.responseData.data));
-      console.log("responseDATA = "+this.responseData);
+      console.log(result);
+     localStorage.setItem('userToken',JSON.stringify(this.responseData.data));
       this.navCtrl.push(HomePage);
-    }, (err)=>{
-      //Connection failed
-      console.log("connection failed");
-      this.toast.present();
+    }, (err) =>{
+      let messageERROR:string
+      switch(err.status){
+        // 0 quand on a pas de connection
+        case 0:
+          messageERROR='Connexion à l\'api impossible';
+          break;
+          // exception quand l'api renvoie une exeption: pr l'instant yen a qu'une possible : mdp/login oncorrect
+        case "exception" :
+          messageERROR=err.data.message;
+          break;
+      };
+      let toast = this.toastCtrl.create({
+        message: messageERROR,
+        duration: 3000,
+        position: 'bottom'
+      });
+      toast.present();
     });
-    //this.navCtrl.push(HomePage);
   }
 
   loginfcb(){
     this.navCtrl.push(HomePage);
   }
+
   loginLinkedin(){
     //login avec compte Linkedin
+
   }
+
 }

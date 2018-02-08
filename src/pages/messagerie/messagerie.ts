@@ -18,23 +18,17 @@ export class MessageriePage {
     this.dbStorage.load(5).then((data : any) => {
       this.data = data.results;
     }, (err) => {
-      console.log(err);
     });
     this.dbStorage.load(5).then((data : any) => {
       this.data2 = data.results;
     }, (err) => {
-      console.log(err);
     });
     this.header_data={isSearch:true,isCamera:true,isProfile:true,title:"KooDeFood"};
   }
 
-  viewProduct(id: string) {
-    let idx : number = this.data.findIndex((el) => {
-      return el.cell == id;
-    });
-    console.log(JSON.stringify(this.data[idx]));
+  startConversation(id: number) {
     this.app.getRootNav().push(ConversationPage, {
-      'product': this.data[idx]
+      'other_user_id': id
     });
   }
 
