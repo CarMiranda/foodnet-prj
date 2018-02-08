@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CreatePostPage } from '../create-post/create-post';
+import { Events } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -16,18 +17,23 @@ export class ConfirmationPage {
     this.imageData = navParams.get('imageData');
   }
 
-  retakePic() {
-    console.log('Implement this sHieeT.');
+  chooseAnother() {
+    console.log('Navigating back to HomePage to choose another picture...');
+    var callback = this.navParams.get('callback');
+    callback('chooseanother').then(() => {
+      this.navCtrl.pop();
+    })
   }
 
-  chooseAnother() {
-    console.log('Implement this sHieeT.');
+  retakePicture() {
+    console.log('Navigating back to HomePage to retake the picture...');
+    this.navCtrl.pop();
   }
 
   createPost() {
     this.navCtrl.push(CreatePostPage, {
       'imageData' : this.imageData
-    })
+    });
   }
 
 }

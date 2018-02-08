@@ -3,6 +3,9 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 
 import {HomePage} from '../home/home';
 import { ApiProvider } from '../../providers/api/api';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { UserProvider } from '../../providers/user/user';
+import { HomePage } from '../home/home';
 
 @IonicPage()
 @Component({
@@ -46,6 +49,5 @@ export class LoginPage {
   }
   loginLinkedin(){
     //login avec compte Linkedin
-
   }
 }

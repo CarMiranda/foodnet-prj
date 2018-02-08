@@ -8,6 +8,9 @@ import { Keyboard } from '@ionic-native/keyboard';
 import { HttpModule } from '@angular/http';
 import { Geolocation } from '@ionic-native/geolocation';
 
+import { CameraPreview } from '@ionic-native/camera-preview';
+import { HttpModule } from '@angular/http';
+import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -27,6 +30,21 @@ import { ConversationPage } from '../pages/conversation/conversation';
 import { CustomHeaderComponent } from '../components/custom-header/custom-header';
 import { FakeCommentsProvider } from '../providers/fake-comments/fake-comments';
 import { ApiProvider } from '../providers/api/api';
+import { GlobalsProvider } from '../providers/globals/globals';
+import { UserProvider } from '../providers/user/user';
+import { AuthProvider } from '../providers/auth/auth';
+
+export class MyHammerConfig extends HammerGestureConfig  {
+  overrides = <any>{
+      // override hammerjs default configuration
+      'pan': {threshold: 5},
+      'swipe': {
+           velocity: 0.4,
+           threshold: 20,
+           direction: 31 // /!\ ugly hack to allow swipe in all direction
+      }
+  }
+}
 
 @NgModule({
   declarations: [
@@ -74,10 +92,15 @@ import { ApiProvider } from '../providers/api/api';
     Geolocation,
     Camera,
     Keyboard,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DbStorageProvider,
     FakeCommentsProvider,
     ApiProvider
+    CameraPreview,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    DbStorageProvider,
+    GlobalsProvider,
+    UserProvider,
+    AuthProvider,
+    {provide: HAMMER_GESTURE_CONFIG, useClass: MyHammerConfig}
   ]
 })
 export class AppModule {}

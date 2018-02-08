@@ -1,5 +1,9 @@
 page-confirmation {
 
+    ion-content {
+        background-color: #FFF;
+    }
+
     #ctn {
         position: absolute;
         height: 100%;
@@ -21,11 +25,11 @@ page-confirmation {
     }
 
     .footer, .navbar {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 1);
     }
 
     .footer::before, .navbar::after { 
-        background: none;
+        display: none;
      }
 
 }
