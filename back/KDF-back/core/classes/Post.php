@@ -6,6 +6,7 @@
             ORM::set_db(DB::factory('app'), 'app');
             if (empty($limit)) $limit = 50;
             if (empty($offset)) $offset = 0;
+            $user_info = User::get($id);
             $res = ORM::for_table('posts', 'app')
                    ->where('owner_id', $id)
                    ->limit($limit)
