@@ -1,0 +1,5 @@
+{
+    "iss": "koodefood",
+    "sub": "authenticationtoken",
+    "aud": "owner"
+}
